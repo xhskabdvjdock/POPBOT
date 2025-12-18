@@ -3,8 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const fs_1 = require("fs");
 const path_1 = require("path");
 const config = {
-    token: 'MTQ0MzE4MDI3NzM4NzIzMTMwMw.GY4bRT.GRRtnevRdwRGyoSx3NpTPBJBOvFxDpltpwOhmc', // token
-    clientId: '1443180277387231303', // bot id
+    token: 'MTQ1MTEwNTk5MDEyNzkxMTAyMw.GUtlIG.d8jXieXVnK2uqzD6nxmSJulANikxWtAWfWN8LM', // token
+    clientId: '1451105990127911023', // bot id
     mongoUri: 'mongodb+srv://pa9965723_db_user:alialiali.1@cluster0.x9ic1bp.mongodb.net/?appName=Cluster0', // mongodb url
     defaultPrefix: '!',
     mainGuildId: '1440283721122058326', // main guild id
