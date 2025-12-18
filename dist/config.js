@@ -1,27 +1,33 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const fs_1 = require("fs");
-const path_1 = require("path");
+
+const { existsSync, readFileSync, writeFileSync } = require("fs");
+const { join } = require("path");
+
 const config = {
-    token: 'MTQ1MTEwNTk5MDEyNzkxMTAyMw.GUtlIG.d8jXieXVnK2uqzD6nxmSJulANikxWtAWfWN8LM', // token
-    clientId: '1451105990127911023', // bot id
-    mongoUri: 'mongodb+srv://pa9965723_db_user:alialiali.1@cluster0.x9ic1bp.mongodb.net/?appName=Cluster0', // mongodb url
+    token: process.env.TOKEN,                 // Discord Bot Token
+    clientId: process.env.CLIENT_ID,           // Application ID
+    mongoUri: process.env.MONGO_URI,           // MongoDB URI
     defaultPrefix: '!',
-    mainGuildId: '1440283721122058326', // main guild id
+    mainGuildId: process.env.MAIN_GUILD_ID,    // Main Guild ID
     defaultLanguage: 'en',
     dashboard: {
-        port: 3000,     // port for dashboard
-        secret: 'wickstudio',  // secret key
-        callbackUrl: 'http://localhost:3000/auth/callback' // callback url
+        port: process.env.PORT || 3000,        // Railway PORT
+        secret: process.env.DASHBOARD_SECRET || 'wickstudio',
+        callbackUrl: process.env.CALLBACK_URL  // Railway callback URL
     }
 };
+
 function loadSettingsFile() {
-    let settingsPath = (0, path_1.join)(__dirname, 'settings.json');
-    if (!(0, fs_1.existsSync)(settingsPath)) {
-        settingsPath = (0, path_1.join)(__dirname, '../settings.json');
-        if (!(0, fs_1.existsSync)(settingsPath)) {
-            settingsPath = (0, path_1.join)(process.cwd(), 'settings.json');
-            if (!(0, fs_1.existsSync)(settingsPath)) {
+    let settingsPath = join(__dirname, 'settings.json');
+
+    if (!existsSync(settingsPath)) {
+        settingsPath = join(__dirname, '../settings.json');
+
+        if (!existsSync(settingsPath)) {
+            settingsPath = join(process.cwd(), 'settings.json');
+
+            if (!existsSync(settingsPath)) {
                 const defaultSettings = {
                     defaultLanguage: "en",
                     logs: {},
@@ -30,23 +36,30 @@ function loadSettingsFile() {
                         modules: {}
                     }
                 };
-                (0, fs_1.writeFileSync)(settingsPath, JSON.stringify(defaultSettings, null, 4), 'utf8');
+
+                writeFileSync(
+                    settingsPath,
+                    JSON.stringify(defaultSettings, null, 4),
+                    'utf8'
+                );
+
                 console.log(`Created default settings file at ${settingsPath}`);
                 return defaultSettings;
             }
         }
     }
+
     try {
         console.log(`Loading settings from: ${settingsPath}`);
-        const settings = JSON.parse((0, fs_1.readFileSync)(settingsPath, 'utf-8'));
-        return settings;
-    }
-    catch (error) {
+        return JSON.parse(readFileSync(settingsPath, 'utf-8'));
+    } catch (error) {
         console.error(`Error reading settings file: ${error}`);
         throw new Error('Failed to load settings.json file');
     }
 }
+
 const settings = loadSettingsFile();
+
 exports.default = {
     ...config,
     ...settings,
