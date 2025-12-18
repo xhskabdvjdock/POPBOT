@@ -638,6 +638,17 @@ class ModBot extends discord_js_1.Client {
             this.on(discord_js_1.Events.VoiceStateUpdate, tempChannelHandler_1.handleVoiceStateUpdate);
             await this.login(config_1.default.token);
             console.log(`Logged in as ${this.user?.tag}`);
+
+            this.user?.setPresence({
+                status: 'dnd', // Do Not Disturb
+                activities: [
+                    {
+                        name: 'Moderating the server',
+                        type: discord_js_1.ActivityType.Playing
+                    }
+                ]
+            });
+
             const dashboard = new server_1.Dashboard(this);
             dashboard.start();
             (0, cleanupTranscripts_1.startTranscriptCleanup)();
