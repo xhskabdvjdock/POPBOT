@@ -5,7 +5,7 @@ const path_1 = require("path");
 const config = {
     token: 'MTQ0MzE4MDI3NzM4NzIzMTMwMw.GY4bRT.GRRtnevRdwRGyoSx3NpTPBJBOvFxDpltpwOhmc', // token
     clientId: '1443180277387231303', // bot id
-    mongoUri: 'mongodb+srv://logienayyad437:rIIsNHWy4inwr7lu@cluster0.ha54lah.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', // mongodb url
+    mongoUri: 'mongodb+srv://pa9965723_db_user:alialiali.1@cluster0.x9ic1bp.mongodb.net/?appName=Cluster0', // mongodb url
     defaultPrefix: '!',
     mainGuildId: '1440283721122058326', // main guild id
     defaultLanguage: 'en',
