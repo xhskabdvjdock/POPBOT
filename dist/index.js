@@ -643,7 +643,7 @@ class ModBot extends discord_js_1.Client {
                 status: 'dnd', // Do Not Disturb
                 activities: [
                     {
-                        name: 'Moderating the server',
+                        name: 'dev by : wlc8',
                         type: discord_js_1.ActivityType.Playing
                     }
                 ]
