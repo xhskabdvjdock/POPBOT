@@ -89,6 +89,12 @@ const channelDelete_1 = __importDefault(require("./src/logs/channelDelete"));
 const channelUpdate_1 = __importDefault(require("./src/logs/channelUpdate"));
 const cleanupTranscripts_1 = require("./src/ticket/cleanupTranscripts");
 const server_1 = require("./dashboard/server");
+const welcomeHandler_1 = require("./src/welcome/welcomeHandler");
+const automodHandler_1 = require("./src/automod/automodHandler");
+const levelingHandler_1 = require("./src/leveling/levelingHandler");
+const selectRolesManager_1 = require("./src/selectRoles/selectRolesManager");
+const gamesHandler_1 = require("./src/games/gamesHandler");
+const autoLinesHandler_1 = require("./src/autoLines/autoLinesHandler");
 class ModBot extends discord_js_1.Client {
     constructor() {
         super({
@@ -279,6 +285,37 @@ class ModBot extends discord_js_1.Client {
                     }
                     return;
                 }
+                if (interaction.isStringSelectMenu() && interaction.customId.startsWith('selectroles_')) {
+                    try {
+                        const selectRolesManager = new selectRolesManager_1.SelectRolesManager(this);
+                        await selectRolesManager.handleInteraction(interaction);
+                    }
+                    catch (error) {
+                        console.error('Error handling select roles interaction:', error);
+                        if (interaction.isRepliable() && !interaction.replied) {
+                            await interaction.reply({
+                                content: '❌ An error occurred while updating roles.',
+                                ephemeral: true
+                            });
+                        }
+                    }
+                    return;
+                }
+                if (interaction.isButton() && interaction.customId.startsWith('game_')) {
+                    try {
+                        await (0, gamesHandler_1.handleGameInteraction)(interaction);
+                    }
+                    catch (error) {
+                        console.error('Error handling game interaction:', error);
+                        if (interaction.isRepliable() && !interaction.replied) {
+                            await interaction.reply({
+                                content: '❌ An error occurred while playing the game.',
+                                ephemeral: true
+                            });
+                        }
+                    }
+                    return;
+                }
                 if (interaction.isButton() || interaction.isStringSelectMenu()) {
                     if (interaction.customId === 'ticket_create' ||
                         interaction.customId.startsWith('ticket_create_')) {
@@ -363,6 +400,8 @@ class ModBot extends discord_js_1.Client {
                     return;
                 if (message.guild && message.member) {
                     await (0, antispamProtection_1.handleMessage)(message);
+                    await (0, automodHandler_1.handleAutoMod)(message);
+                    await (0, levelingHandler_1.handleLeveling)(message);
                 }
                 await (0, suggestionHandler_1.handleSuggestion)(message);
                 await (0, autoReplyHandler_1.handleAutoReply)(message);
@@ -483,6 +522,7 @@ class ModBot extends discord_js_1.Client {
                     }
                 }
                 await (0, memberJoin_1.default)(member);
+                await (0, welcomeHandler_1.handleWelcome)(member);
             });
             this.on(discord_js_1.Events.GuildMemberRemove, memberLeave_1.default);
             this.on(discord_js_1.Events.GuildMemberUpdate, async (oldMember, newMember) => {
@@ -652,6 +692,9 @@ class ModBot extends discord_js_1.Client {
             const dashboard = new server_1.Dashboard(this);
             dashboard.start();
             (0, cleanupTranscripts_1.startTranscriptCleanup)();
+            // Initialize Auto Lines Handler
+            const autoLinesHandler = new autoLinesHandler_1.AutoLinesHandler(this);
+            autoLinesHandler.start();
         }
         catch (error) {
             console.error('Error during initialization:', error);
