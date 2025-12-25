@@ -62,10 +62,17 @@ class LevelingHandler {
         }
     }
     calculateLevel(xp) {
-        return Math.floor(0.1 * Math.sqrt(xp)) + 1;
+        // Formula: XP = 5 × (level²) + (50 × level) + 100
+        // Solving for level: level = (-50 + sqrt(2500 + 20*(XP - 100))) / 10
+        if (xp < 100) return 1;
+        const discriminant = 2500 + 20 * (xp - 100);
+        if (discriminant < 0) return 1;
+        const level = Math.floor((-50 + Math.sqrt(discriminant)) / 10);
+        return Math.max(1, level);
     }
     calculateXPForLevel(level) {
-        return Math.pow((level - 1) / 0.1, 2);
+        // Formula: XP = 5 × (level²) + (50 × level) + 100
+        return 5 * (level * level) + (50 * level) + 100;
     }
     async handleLevelUp(member, oldLevel, newLevel, settings) {
         try {
