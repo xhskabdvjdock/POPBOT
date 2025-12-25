@@ -285,7 +285,8 @@ class ModBot extends discord_js_1.Client {
                     }
                     return;
                 }
-                if (interaction.isStringSelectMenu() && interaction.customId.startsWith('selectroles_')) {
+                if ((interaction.isButton() || interaction.isStringSelectMenu()) && 
+                    (interaction.customId.startsWith('selectroles_') || interaction.customId.startsWith('rolerole_'))) {
                     try {
                         const selectRolesManager = new selectRolesManager_1.SelectRolesManager(this);
                         await selectRolesManager.handleInteraction(interaction);
@@ -402,6 +403,7 @@ class ModBot extends discord_js_1.Client {
                     await (0, antispamProtection_1.handleMessage)(message);
                     await (0, automodHandler_1.handleAutoMod)(message);
                     await (0, levelingHandler_1.handleLeveling)(message);
+                    await (0, autoLinesHandler_1.handleAutoLines)(message);
                 }
                 await (0, suggestionHandler_1.handleSuggestion)(message);
                 await (0, autoReplyHandler_1.handleAutoReply)(message);
