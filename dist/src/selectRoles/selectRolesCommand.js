@@ -4,14 +4,10 @@ const discord_js_1 = require("discord.js");
 const selectRolesManager_1 = require("./selectRolesManager");
 module.exports = {
     data: new discord_js_1.SlashCommandBuilder()
-        .setName("selectroles")
-        .setDescription("Send a role selection menu")
-        .addStringOption((option) => option
-        .setName("menu_id")
-        .setDescription("The ID of the role menu to send")
-        .setRequired(true)),
+        .setName("setup-roles")
+        .setDescription("Send a role selection message with buttons"),
     command: {
-        name: "selectroles",
+        name: "setup-roles",
         enabled: true,
         execute: async (interaction, args, client) => {
             if (!interaction.isChatInputCommand())
@@ -22,12 +18,11 @@ module.exports = {
                     ephemeral: true
                 });
             }
-            const menuId = interaction.options.getString("menu_id", true);
             const manager = new selectRolesManager_1.SelectRolesManager(client);
             try {
-                await manager.sendRoleMenu(interaction.channel, menuId);
+                await manager.sendRoleButtons(interaction.channel);
                 await interaction.reply({
-                    content: `✅ Role menu sent successfully!`,
+                    content: `✅ Role selection message sent successfully!`,
                     ephemeral: true
                 });
             }
@@ -40,4 +35,3 @@ module.exports = {
         }
     }
 };
-
