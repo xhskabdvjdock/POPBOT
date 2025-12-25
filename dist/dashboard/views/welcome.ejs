@@ -1,0 +1,172 @@
+<%- contentFor('body') %>
+
+<div class="main-content" dir="<%= currentLang === 'ar' ? 'rtl' : 'ltr' %>">
+    <div class="space-y-6">
+        <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 rounded-2xl mb-6">
+            <h1 class="text-3xl font-bold mb-2 flex items-center <%= currentLang === 'ar' ? 'flex-row-reverse' : '' %>">
+                <i class="fas fa-hand-paper <%= currentLang === 'ar' ? 'ml-4' : 'mr-4' %>"></i>
+                <%= currentLang === 'ar' ? 'نظام الترحيب' : 'Welcome System' %>
+            </h1>
+            <p class="text-white/80"><%= currentLang === 'ar' ? 'قم بتكوين رسائل الترحيب للمستخدمين الجدد' : 'Configure welcome messages for new members' %></p>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold text-gray-800 dark:text-white">
+                    <%= currentLang === 'ar' ? 'الإعدادات العامة' : 'General Settings' %>
+                </h2>
+                <label class="switch-large">
+                    <input type="checkbox" id="welcome-enabled" 
+                           <%= settings.welcome?.enabled ? 'checked' : '' %>>
+                    <span class="slider-large"></span>
+                </label>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="form-group">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <%= currentLang === 'ar' ? 'قناة الترحيب' : 'Welcome Channel' %>
+                    </label>
+                    <select id="welcome-channel" 
+                            class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg">
+                        <option value=""><%= currentLang === 'ar' ? 'اختر القناة' : 'Select Channel' %></option>
+                        <% channels.forEach(channel => { %>
+                            <option value="<%= channel.id %>" 
+                                    <%= settings.welcome?.channelId === channel.id ? 'selected' : '' %>>
+                                <%= channel.name %>
+                            </option>
+                        <% }) %>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <%= currentLang === 'ar' ? 'لون الرسالة' : 'Message Color' %>
+                    </label>
+                    <input type="color" id="welcome-color" 
+                           value="<%= settings.welcome?.embed?.color || '#3498db' %>"
+                           class="w-full h-10 rounded-lg cursor-pointer">
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+            <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-6">
+                <%= currentLang === 'ar' ? 'رسالة الترحيب' : 'Welcome Message' %>
+            </h2>
+
+            <div class="space-y-4">
+                <div class="form-group">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <%= currentLang === 'ar' ? 'عنوان الرسالة' : 'Message Title' %>
+                    </label>
+                    <input type="text" id="welcome-title"
+                           value="<%= settings.welcome?.embed?.title || 'Welcome!' %>"
+                           placeholder="<%= currentLang === 'ar' ? 'مثال: مرحباً!' : 'Example: Welcome!' %>"
+                           class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg">
+                    <p class="text-xs text-gray-500 mt-1">
+                        <%= currentLang === 'ar' ? 'المتغيرات المتاحة: {user}, {server}, {memberCount}' : 'Available variables: {user}, {server}, {memberCount}' %>
+                    </p>
+                </div>
+
+                <div class="form-group">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <%= currentLang === 'ar' ? 'وصف الرسالة' : 'Message Description' %>
+                    </label>
+                    <textarea id="welcome-description" rows="4"
+                              placeholder="<%= currentLang === 'ar' ? 'مثال: مرحباً {user} في {server}!' : 'Example: Welcome {user} to {server}!' %>"
+                              class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg"><%= settings.welcome?.embed?.description || 'Welcome to {server}, {user}!' %></textarea>
+                    <p class="text-xs text-gray-500 mt-1">
+                        <%= currentLang === 'ar' ? 'المتغيرات المتاحة: {user}, {server}, {memberCount}' : 'Available variables: {user}, {server}, {memberCount}' %>
+                    </p>
+                </div>
+
+                <div class="form-group">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <%= currentLang === 'ar' ? 'رسالة إضافية (اختياري)' : 'Additional Message (Optional)' %>
+                    </label>
+                    <textarea id="welcome-message" rows="2"
+                              placeholder="<%= currentLang === 'ar' ? 'رسالة نصية إضافية قبل الرسالة المضمنة' : 'Additional text message before embed' %>"
+                              class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg"><%= settings.welcome?.message || '' %></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+            <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-6">
+                <%= currentLang === 'ar' ? 'إعدادات الرسالة المضمنة' : 'Embed Settings' %>
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="form-group">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <%= currentLang === 'ar' ? 'صورة مصغرة' : 'Thumbnail URL' %>
+                    </label>
+                    <input type="text" id="welcome-thumbnail"
+                           value="<%= settings.welcome?.embed?.thumbnail || '' %>"
+                           placeholder="<%= currentLang === 'ar' ? 'رابط الصورة المصغرة' : 'Thumbnail image URL' %>"
+                           class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg">
+                </div>
+
+                <div class="form-group">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <%= currentLang === 'ar' ? 'صورة كبيرة' : 'Large Image URL' %>
+                    </label>
+                    <input type="text" id="welcome-image"
+                           value="<%= settings.welcome?.embed?.image || '' %>"
+                           placeholder="<%= currentLang === 'ar' ? 'رابط الصورة الكبيرة' : 'Large image URL' %>"
+                           class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg">
+                </div>
+
+                <div class="form-group">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <%= currentLang === 'ar' ? 'نص التذييل' : 'Footer Text' %>
+                    </label>
+                    <input type="text" id="welcome-footer"
+                           value="<%= settings.welcome?.embed?.footer?.text || '' %>"
+                           placeholder="<%= currentLang === 'ar' ? 'نص التذييل' : 'Footer text' %>"
+                           class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg">
+                </div>
+
+                <div class="form-group">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <%= currentLang === 'ar' ? 'أيقونة التذييل' : 'Footer Icon URL' %>
+                    </label>
+                    <input type="text" id="welcome-footerIcon"
+                           value="<%= settings.welcome?.embed?.footer?.iconURL || '' %>"
+                           placeholder="<%= currentLang === 'ar' ? 'رابط أيقونة التذييل' : 'Footer icon URL' %>"
+                           class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg">
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <label class="flex items-center space-x-2">
+                    <input type="checkbox" id="welcome-timestamp"
+                           <%= settings.welcome?.embed?.timestamp !== false ? 'checked' : '' %>>
+                    <span class="text-sm text-gray-700 dark:text-gray-300">
+                        <%= currentLang === 'ar' ? 'إظهار الطابع الزمني' : 'Show Timestamp' %>
+                    </span>
+                </label>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="save-bar" class="fixed bottom-0 left-0 right-0 bg-yellow-500 text-white p-4 shadow-lg z-50 hidden">
+    <div class="container mx-auto flex items-center justify-between">
+        <span class="font-semibold">
+            <%= currentLang === 'ar' ? 'يوجد تغييرات غير محفوظة' : 'You have unsaved changes' %>
+        </span>
+        <div class="space-x-4">
+            <button id="save-welcome" class="px-4 py-2 bg-green-600 rounded-lg hover:bg-green-700 transition-all">
+                <%= currentLang === 'ar' ? 'حفظ' : 'Save' %>
+            </button>
+            <button id="cancel-welcome" class="px-4 py-2 bg-gray-600 rounded-lg hover:bg-gray-700 transition-all">
+                <%= currentLang === 'ar' ? 'إلغاء' : 'Cancel' %>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script src="/js/welcome.js"></script>
+

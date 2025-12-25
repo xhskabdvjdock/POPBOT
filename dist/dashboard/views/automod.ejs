@@ -1,0 +1,108 @@
+<%- contentFor('body') %>
+
+<div class="main-content" dir="<%= currentLang === 'ar' ? 'rtl' : 'ltr' %>">
+    <div class="space-y-6">
+        <div class="bg-gradient-to-r from-red-600 to-orange-600 text-white p-6 rounded-2xl mb-6">
+            <h1 class="text-3xl font-bold mb-2 flex items-center <%= currentLang === 'ar' ? 'flex-row-reverse' : '' %>">
+                <i class="fas fa-robot <%= currentLang === 'ar' ? 'ml-4' : 'mr-4' %>"></i>
+                <%= currentLang === 'ar' ? 'نظام الإشراف التلقائي' : 'AutoMod & Auto Lines' %>
+            </h1>
+            <p class="text-white/80"><%= currentLang === 'ar' ? 'قم بتكوين أنظمة الإشراف التلقائي' : 'Configure automatic moderation systems' %></p>
+        </div>
+
+        <!-- AutoMod Section -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold text-gray-800 dark:text-white">
+                    <%= currentLang === 'ar' ? 'الإشراف التلقائي' : 'AutoMod' %>
+                </h2>
+                <label class="switch-large">
+                    <input type="checkbox" id="automod-enabled" 
+                           <%= settings.autoMod?.enabled ? 'checked' : '' %>>
+                    <span class="slider-large"></span>
+                </label>
+            </div>
+
+            <div class="space-y-6">
+                <!-- Anti-Link -->
+                <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-800 dark:text-white">
+                            <%= currentLang === 'ar' ? 'منع الروابط' : 'Anti-Link' %>
+                        </h3>
+                        <label class="switch">
+                            <input type="checkbox" id="automod-antiLink-enabled"
+                                   <%= settings.autoMod?.antiLink?.enabled ? 'checked' : '' %>>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                        <%= currentLang === 'ar' ? 'يمنع إرسال الروابط في الرسائل' : 'Prevents sending links in messages' %>
+                    </p>
+                </div>
+
+                <!-- Anti-Spam -->
+                <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-800 dark:text-white">
+                            <%= currentLang === 'ar' ? 'منع الرسائل المكررة' : 'Anti-Spam' %>
+                        </h3>
+                        <label class="switch">
+                            <input type="checkbox" id="automod-antiSpam-enabled"
+                                   <%= settings.autoMod?.antiSpam?.enabled ? 'checked' : '' %>>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                        <%= currentLang === 'ar' ? 'يمنع إرسال الرسائل المكررة بسرعة' : 'Prevents sending duplicate messages quickly' %>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Auto Lines Section -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold text-gray-800 dark:text-white">
+                    <%= currentLang === 'ar' ? 'الرسائل التلقائية' : 'Auto Lines' %>
+                </h2>
+                <label class="switch-large">
+                    <input type="checkbox" id="autolines-enabled" 
+                           <%= settings.autoLines?.enabled ? 'checked' : '' %>>
+                    <span class="slider-large"></span>
+                </label>
+            </div>
+
+            <div class="space-y-4">
+                <p class="text-sm text-gray-600 dark:text-gray-400">
+                    <%= currentLang === 'ar' ? 'إضافة خط فاصل بعد كل رسالة' : 'Add a divider line after every message' %>
+                </p>
+                <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg">
+                    <p class="text-sm text-gray-700 dark:text-gray-300">
+                        <strong><%= currentLang === 'ar' ? 'ملاحظة:' : 'Note:' %></strong>
+                        <%= currentLang === 'ar' ? 'سيتم إضافة خط فاصل تلقائياً بعد كل رسالة في القنوات المحددة.' : 'A divider line will be automatically added after every message in specified channels.' %>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="save-bar" class="fixed bottom-0 left-0 right-0 bg-yellow-500 text-white p-4 shadow-lg z-50 hidden">
+    <div class="container mx-auto flex items-center justify-between">
+        <span class="font-semibold">
+            <%= currentLang === 'ar' ? 'يوجد تغييرات غير محفوظة' : 'You have unsaved changes' %>
+        </span>
+        <div class="space-x-4">
+            <button id="save-automod" class="px-4 py-2 bg-green-600 rounded-lg hover:bg-green-700 transition-all">
+                <%= currentLang === 'ar' ? 'حفظ' : 'Save' %>
+            </button>
+            <button id="cancel-automod" class="px-4 py-2 bg-gray-600 rounded-lg hover:bg-gray-700 transition-all">
+                <%= currentLang === 'ar' ? 'إلغاء' : 'Cancel' %>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script src="/js/automod.js"></script>
+

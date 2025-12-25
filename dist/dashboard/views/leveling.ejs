@@ -1,0 +1,124 @@
+<%- contentFor('body') %>
+
+<div class="main-content" dir="<%= currentLang === 'ar' ? 'rtl' : 'ltr' %>">
+    <div class="space-y-6">
+        <div class="bg-gradient-to-r from-green-600 to-teal-600 text-white p-6 rounded-2xl mb-6">
+            <h1 class="text-3xl font-bold mb-2 flex items-center <%= currentLang === 'ar' ? 'flex-row-reverse' : '' %>">
+                <i class="fas fa-chart-line <%= currentLang === 'ar' ? 'ml-4' : 'mr-4' %>"></i>
+                <%= currentLang === 'ar' ? 'نظام المستويات' : 'Leveling System' %>
+            </h1>
+            <p class="text-white/80"><%= currentLang === 'ar' ? 'قم بتكوين نظام XP والمستويات للمستخدمين' : 'Configure XP and leveling system for users' %></p>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold text-gray-800 dark:text-white">
+                    <%= currentLang === 'ar' ? 'الإعدادات العامة' : 'General Settings' %>
+                </h2>
+                <label class="switch-large">
+                    <input type="checkbox" id="leveling-enabled" 
+                           <%= settings.leveling?.enabled ? 'checked' : '' %>>
+                    <span class="slider-large"></span>
+                </label>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="form-group">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <%= currentLang === 'ar' ? 'معدل اكتساب XP' : 'XP Gain Rate' %>
+                    </label>
+                    <div class="flex items-center space-x-4">
+                        <input type="range" id="leveling-xpRate" min="1" max="100" step="1"
+                               value="<%= settings.leveling?.xpPerMessage || 15 %>"
+                               class="flex-1">
+                        <span class="text-lg font-semibold text-gray-700 dark:text-gray-300 w-16 text-center" id="leveling-xpRate-value">
+                            <%= settings.leveling?.xpPerMessage || 15 %>
+                        </span>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">
+                        <%= currentLang === 'ar' ? 'XP المكتسب لكل رسالة' : 'XP gained per message' %>
+                    </p>
+                </div>
+
+                <div class="form-group">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <%= currentLang === 'ar' ? 'وقت الانتظار (بالثواني)' : 'Cooldown (seconds)' %>
+                    </label>
+                    <input type="number" id="leveling-cooldown" min="1" max="300"
+                           value="<%= settings.leveling?.cooldown || 60 %>"
+                           class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg">
+                    <p class="text-xs text-gray-500 mt-1">
+                        <%= currentLang === 'ar' ? 'الوقت بين كل XP (افتراضي: 60 ثانية)' : 'Time between XP gains (default: 60 seconds)' %>
+                    </p>
+                </div>
+
+                <div class="form-group">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <%= currentLang === 'ar' ? 'قناة إشعارات المستوى' : 'Level Up Channel' %>
+                    </label>
+                    <select id="leveling-levelUpChannel" 
+                            class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg">
+                        <option value=""><%= currentLang === 'ar' ? 'لا شيء (إرسال في نفس القناة)' : 'None (send in same channel)' %></option>
+                        <% channels.forEach(channel => { %>
+                            <option value="<%= channel.id %>" 
+                                    <%= settings.leveling?.levelUpChannel === channel.id ? 'selected' : '' %>>
+                                <%= channel.name %>
+                            </option>
+                        <% }) %>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <%= currentLang === 'ar' ? 'القنوات المستثناة' : 'Ignored Channels' %>
+                    </label>
+                    <select id="leveling-ignoredChannels" multiple
+                            class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg">
+                        <% channels.forEach(channel => { %>
+                            <option value="<%= channel.id %>" 
+                                    <%= settings.leveling?.ignoredChannels?.includes(channel.id) ? 'selected' : '' %>>
+                                <%= channel.name %>
+                            </option>
+                        <% }) %>
+                    </select>
+                    <p class="text-xs text-gray-500 mt-1">
+                        <%= currentLang === 'ar' ? 'اضغط Ctrl/Cmd لاختيار عدة قنوات' : 'Press Ctrl/Cmd to select multiple channels' %>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+            <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-6">
+                <%= currentLang === 'ar' ? 'معلومات الصيغة' : 'Formula Information' %>
+            </h2>
+            <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg">
+                <p class="text-sm text-gray-700 dark:text-gray-300 mb-2">
+                    <strong><%= currentLang === 'ar' ? 'صيغة حساب XP للمستوى:' : 'XP calculation formula for level:' %></strong>
+                </p>
+                <code class="text-sm text-gray-800 dark:text-gray-200">
+                    XP = 5 × (level²) + (50 × level) + 100
+                </code>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="save-bar" class="fixed bottom-0 left-0 right-0 bg-yellow-500 text-white p-4 shadow-lg z-50 hidden">
+    <div class="container mx-auto flex items-center justify-between">
+        <span class="font-semibold">
+            <%= currentLang === 'ar' ? 'يوجد تغييرات غير محفوظة' : 'You have unsaved changes' %>
+        </span>
+        <div class="space-x-4">
+            <button id="save-leveling" class="px-4 py-2 bg-green-600 rounded-lg hover:bg-green-700 transition-all">
+                <%= currentLang === 'ar' ? 'حفظ' : 'Save' %>
+            </button>
+            <button id="cancel-leveling" class="px-4 py-2 bg-gray-600 rounded-lg hover:bg-gray-700 transition-all">
+                <%= currentLang === 'ar' ? 'إلغاء' : 'Cancel' %>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script src="/js/leveling.js"></script>
+
