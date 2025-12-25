@@ -735,5 +735,45 @@
                 }
             }
         ]
+    },
+    "welcome": {
+        "enabled": false,
+        "channelId": "",
+        "message": "",
+        "embed": {
+            "title": "Welcome!",
+            "description": "Welcome to {server}, {user}!",
+            "color": "#3498db",
+            "thumbnail": "",
+            "image": "",
+            "footer": {
+                "text": "",
+                "iconURL": ""
+            },
+            "timestamp": true
+        }
+    },
+    "leveling": {
+        "enabled": false,
+        "xpPerMessage": 15,
+        "cooldown": 60,
+        "levelUpChannel": "",
+        "ignoredChannels": []
+    },
+    "selectRoles": {
+        "enabled": false,
+        "buttons": []
+    },
+    "autoMod": {
+        "enabled": false,
+        "antiLink": {
+            "enabled": false
+        },
+        "antiSpam": {
+            "enabled": false
+        }
+    },
+    "autoLines": {
+        "enabled": false
     }
 }
