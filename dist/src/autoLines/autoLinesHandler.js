@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AutoLinesHandler = void 0;
+exports.AutoLinesHandler = exports.handleAutoLines = void 0;
 const discord_js_1 = require("discord.js");
 class AutoLinesHandler {
     constructor(client) {
@@ -12,6 +12,25 @@ class AutoLinesHandler {
         setInterval(() => {
             this.checkAndSendMessages();
         }, 60000); // Check every minute
+    }
+    async addDivider(message) {
+        try {
+            if (message.author.bot)
+                return;
+            if (!message.guild || !message.member)
+                return;
+            const settings = message.client.settings;
+            if (!settings.autoLines?.enabled)
+                return;
+            const channel = message.channel;
+            if (!channel || channel.type !== discord_js_1.ChannelType.GuildText)
+                return;
+            // Add a divider line after the message
+            await channel.send("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━").catch(() => { });
+        }
+        catch (error) {
+            console.error("Error adding auto line divider:", error);
+        }
     }
     loadTimers() {
         const settings = this.client.settings;
@@ -117,4 +136,9 @@ class AutoLinesHandler {
     }
 }
 exports.AutoLinesHandler = AutoLinesHandler;
+async function handleAutoLines(message) {
+    const handler = new AutoLinesHandler(message.client);
+    await handler.addDivider(message);
+}
+exports.handleAutoLines = handleAutoLines;
 
