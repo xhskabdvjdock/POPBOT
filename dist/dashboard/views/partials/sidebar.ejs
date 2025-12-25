@@ -101,24 +101,26 @@
                     <%= currentLang === 'ar' ? 'الميزات المتقدمة' : 'ADVANCED FEATURES' %>
                 </h2>
                 <div class="space-y-1">
-                    <% const comingSoonLinks = [
-                        { path: '/welcome', icon: 'fa-hand-wave', faClass: 'fa-hand-paper', name: 'welcomeSystem', enName: 'Welcome System', arName: 'نظام الترحيب' },
-                        { path: '/selectroles', icon: 'fa-id-badge', faClass: 'fa-id-badge', name: 'selectRoles', enName: 'Select Roles Manager', arName: 'مدير اختيار الرتب' },
-                        { path: '/games', icon: 'fa-gamepad', faClass: 'fa-gamepad', name: 'games', enName: 'Games', arName: 'ألعاب ديسكورد' },
-                        { path: '/automod', icon: 'fa-robot', faClass: 'fa-robot', name: 'autoMod', enName: 'AutoMod', arName: 'نظام الإشراف التلقائي' },
-                        { path: '/autolines', icon: 'fa-align-left', faClass: 'fa-align-left', name: 'autoLines', enName: 'Auto Lines', arName: 'الرسائل التلقائية' },
-                        { path: '/leveling', icon: 'fa-chart-line', faClass: 'fa-chart-line', name: 'leveling', enName: 'Leveling System', arName: 'نظام المستويات' }
+                    <% const advancedFeatures = [
+                        { path: '/welcome', icon: 'fa-hand-wave', faClass: 'fa-hand-paper', name: 'welcomeSystem', enName: 'Welcome System', arName: 'نظام الترحيب', comingSoon: false },
+                        { path: '/selectroles', icon: 'fa-id-badge', faClass: 'fa-id-badge', name: 'selectRoles', enName: 'Select Roles Manager', arName: 'مدير اختيار الرتب', comingSoon: false },
+                        { path: '/games', icon: 'fa-gamepad', faClass: 'fa-gamepad', name: 'games', enName: 'Games', arName: 'ألعاب ديسكورد', comingSoon: true },
+                        { path: '/automod', icon: 'fa-robot', faClass: 'fa-robot', name: 'autoMod', enName: 'AutoMod', arName: 'نظام الإشراف التلقائي', comingSoon: false },
+                        { path: '/autolines', icon: 'fa-align-left', faClass: 'fa-align-left', name: 'autoLines', enName: 'Auto Lines', arName: 'الرسائل التلقائية', comingSoon: false },
+                        { path: '/leveling', icon: 'fa-chart-line', faClass: 'fa-chart-line', name: 'leveling', enName: 'Leveling System', arName: 'نظام المستويات', comingSoon: false }
                     ] %>
                     
-                    <% comingSoonLinks.forEach(link => { %>
+                    <% advancedFeatures.forEach(link => { %>
                         <a href="<%= link.path %>" class="nav-link flex items-center justify-between px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-xl transition-all duration-300 group <%= path === link.path ? 'active bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-900/10 border-r-4 border-blue-500' : '' %>">
                             <div class="flex items-center">
                                 <i class="fas <%= link.faClass %> w-6 text-gray-400 group-hover:text-blue-500 transform group-hover:scale-110 transition-transform"></i>
                                 <span class="ml-2"><%= currentLang === 'ar' ? link.arName : link.enName %></span>
                             </div>
-                            <div class="bg-gradient-to-r from-yellow-400 to-yellow-500 text-xs text-white px-2 py-1 rounded-full animate-pulse">
-                                <%= currentLang === 'ar' ? 'قريباً' : 'Soon' %>
-                            </div>
+                            <% if (link.comingSoon) { %>
+                                <div class="bg-gradient-to-r from-yellow-400 to-yellow-500 text-xs text-white px-2 py-1 rounded-full animate-pulse">
+                                    <%= currentLang === 'ar' ? 'قريباً' : 'Soon' %>
+                                </div>
+                            <% } %>
                         </a>
                     <% }) %>
                 </div>
