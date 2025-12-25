@@ -1377,17 +1377,30 @@ class Dashboard {
                 });
             }
         });
-        this.app.get('/welcome', (_req, res) => {
+        this.app.get('/welcome', async (_req, res) => {
             try {
                 const currentLang = _req.cookies?.preferredLanguage || 'en';
                 const locale = this.getLocale(currentLang);
-                return res.render('coming-soon', {
-                    title: locale.comingSoon.features.welcomeSystem.title,
-                    feature: 'welcomeSystem',
-                    featureIcon: 'fas fa-hand-paper',
+                const guild = this.client.guilds.cache.get(config_1.default.mainGuildId);
+                if (!guild) {
+                    return res.status(404).render('error', {
+                        title: '404 - Not Found',
+                        error: { code: 404, message: 'Guild not found' },
+                        currentLang,
+                        locale,
+                        path: '/welcome'
+                    });
+                }
+                const channels = guild.channels.cache
+                    .filter(channel => channel.type === discord_js_1.ChannelType.GuildText)
+                    .map(channel => ({
+                    id: channel.id,
+                    name: channel.name
+                }));
+                return res.render('welcome', {
+                    title: currentLang === 'ar' ? 'نظام الترحيب' : 'Welcome System',
                     settings: this.client.settings,
-                    client: this.client,
-                    config: config_1.default,
+                    channels,
                     path: '/welcome',
                     currentLang,
                     locale,
@@ -1404,17 +1417,32 @@ class Dashboard {
                 });
             }
         });
-        this.app.get('/selectroles', (_req, res) => {
+        this.app.get('/selectroles', async (_req, res) => {
             try {
                 const currentLang = _req.cookies?.preferredLanguage || 'en';
                 const locale = this.getLocale(currentLang);
-                return res.render('coming-soon', {
-                    title: locale.comingSoon.features.selectRoles.title,
-                    feature: 'selectRoles',
-                    featureIcon: 'fas fa-id-badge',
+                const guild = this.client.guilds.cache.get(config_1.default.mainGuildId);
+                if (!guild) {
+                    return res.status(404).render('error', {
+                        title: '404 - Not Found',
+                        error: { code: 404, message: 'Guild not found' },
+                        currentLang,
+                        locale,
+                        path: '/selectroles'
+                    });
+                }
+                const roles = guild.roles.cache
+                    .filter(role => role.id !== guild.id)
+                    .sort((a, b) => b.position - a.position)
+                    .map(role => ({
+                    id: role.id,
+                    name: role.name,
+                    color: role.hexColor || '#ffffff'
+                }));
+                return res.render('selectroles', {
+                    title: currentLang === 'ar' ? 'مدير اختيار الرتب' : 'Select Roles Manager',
                     settings: this.client.settings,
-                    client: this.client,
-                    config: config_1.default,
+                    roles,
                     path: '/selectroles',
                     currentLang,
                     locale,
@@ -1462,13 +1490,9 @@ class Dashboard {
             try {
                 const currentLang = _req.cookies?.preferredLanguage || 'en';
                 const locale = this.getLocale(currentLang);
-                return res.render('coming-soon', {
-                    title: locale.comingSoon.features.autoMod.title,
-                    feature: 'autoMod',
-                    featureIcon: 'fas fa-robot',
+                return res.render('automod', {
+                    title: currentLang === 'ar' ? 'نظام الإشراف التلقائي' : 'AutoMod & Auto Lines',
                     settings: this.client.settings,
-                    client: this.client,
-                    config: config_1.default,
                     path: '/automod',
                     currentLang,
                     locale,
@@ -1512,17 +1536,30 @@ class Dashboard {
                 });
             }
         });
-        this.app.get('/leveling', (_req, res) => {
+        this.app.get('/leveling', async (_req, res) => {
             try {
                 const currentLang = _req.cookies?.preferredLanguage || 'en';
                 const locale = this.getLocale(currentLang);
-                return res.render('coming-soon', {
-                    title: locale.comingSoon.features.leveling.title,
-                    feature: 'leveling',
-                    featureIcon: 'fas fa-chart-line',
+                const guild = this.client.guilds.cache.get(config_1.default.mainGuildId);
+                if (!guild) {
+                    return res.status(404).render('error', {
+                        title: '404 - Not Found',
+                        error: { code: 404, message: 'Guild not found' },
+                        currentLang,
+                        locale,
+                        path: '/leveling'
+                    });
+                }
+                const channels = guild.channels.cache
+                    .filter(channel => channel.type === discord_js_1.ChannelType.GuildText)
+                    .map(channel => ({
+                    id: channel.id,
+                    name: channel.name
+                }));
+                return res.render('leveling', {
+                    title: currentLang === 'ar' ? 'نظام المستويات' : 'Leveling System',
                     settings: this.client.settings,
-                    client: this.client,
-                    config: config_1.default,
+                    channels,
                     path: '/leveling',
                     currentLang,
                     locale,
@@ -1537,6 +1574,101 @@ class Dashboard {
                     currentLang: 'en',
                     locale: this.getLocale('en')
                 });
+            }
+        });
+        this.app.post('/api/welcome/settings', async (req, res) => {
+            try {
+                const settings = req.body;
+                const settingsPath = (0, path_2.join)(process.cwd(), 'settings.json');
+                let currentSettings = JSON.parse((0, fs_1.readFileSync)(settingsPath, 'utf8'));
+                currentSettings.welcome = {
+                    ...currentSettings.welcome,
+                    ...settings
+                };
+                (0, fs_1.writeFileSync)(settingsPath, JSON.stringify(currentSettings, null, 4), 'utf8');
+                this.client.settings = currentSettings;
+                return res.json({
+                    success: true,
+                    settings: currentSettings.welcome
+                });
+            }
+            catch (error) {
+                console.error('Error saving welcome settings:', error);
+                return res.status(500).json({ error: 'Failed to save welcome settings' });
+            }
+        });
+        this.app.post('/api/leveling/settings', async (req, res) => {
+            try {
+                const settings = req.body;
+                const settingsPath = (0, path_2.join)(process.cwd(), 'settings.json');
+                let currentSettings = JSON.parse((0, fs_1.readFileSync)(settingsPath, 'utf8'));
+                currentSettings.leveling = {
+                    ...currentSettings.leveling,
+                    ...settings
+                };
+                (0, fs_1.writeFileSync)(settingsPath, JSON.stringify(currentSettings, null, 4), 'utf8');
+                this.client.settings = currentSettings;
+                return res.json({
+                    success: true,
+                    settings: currentSettings.leveling
+                });
+            }
+            catch (error) {
+                console.error('Error saving leveling settings:', error);
+                return res.status(500).json({ error: 'Failed to save leveling settings' });
+            }
+        });
+        this.app.post('/api/selectroles/settings', async (req, res) => {
+            try {
+                const settings = req.body;
+                const settingsPath = (0, path_2.join)(process.cwd(), 'settings.json');
+                let currentSettings = JSON.parse((0, fs_1.readFileSync)(settingsPath, 'utf8'));
+                currentSettings.selectRoles = {
+                    ...currentSettings.selectRoles,
+                    ...settings
+                };
+                (0, fs_1.writeFileSync)(settingsPath, JSON.stringify(currentSettings, null, 4), 'utf8');
+                this.client.settings = currentSettings;
+                return res.json({
+                    success: true,
+                    settings: currentSettings.selectRoles
+                });
+            }
+            catch (error) {
+                console.error('Error saving select roles settings:', error);
+                return res.status(500).json({ error: 'Failed to save select roles settings' });
+            }
+        });
+        this.app.post('/api/automod/settings', async (req, res) => {
+            try {
+                const settings = req.body;
+                const settingsPath = (0, path_2.join)(process.cwd(), 'settings.json');
+                let currentSettings = JSON.parse((0, fs_1.readFileSync)(settingsPath, 'utf8'));
+                if (settings.autoMod) {
+                    currentSettings.autoMod = {
+                        ...currentSettings.autoMod,
+                        ...settings.autoMod
+                    };
+                }
+                if (settings.autoLines) {
+                    currentSettings.autoLines = {
+                        ...currentSettings.autoLines,
+                        ...settings.autoLines
+                    };
+                }
+                (0, fs_1.writeFileSync)(settingsPath, JSON.stringify(currentSettings, null, 4), 'utf8');
+                this.client.settings = currentSettings;
+                return res.json({
+                    success: true,
+                    settings: {
+                        autoMod: currentSettings.autoMod,
+                        autoLines: currentSettings.autoLines
+                    }
+                });
+            }
+            catch (error) {
+                console.error('Error saving automod settings:', error);
+                return res.status(500).json({ error: 'Failed to save automod settings' });
             }
         });
         this.app.get('/api/commands/list', async (_req, res) => {
