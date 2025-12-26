@@ -159,20 +159,29 @@ class Dashboard {
             next();
         });
         const isProduction = process.env.NODE_ENV === 'production';
+        // Check if we're behind a proxy (like Render.com)
+        const isBehindProxy = process.env.RENDER || process.env.NODE_ENV === 'production';
         this.app.use((0, express_session_1.default)({
             secret: config_1.default.dashboard.secret || 'nun-sever-secret-key-change-this',
             resave: false,
             saveUninitialized: false,
             name: 'dashboard.sid',
             cookie: { 
-                secure: false, // Set to false for development, true for production with HTTPS
+                secure: isBehindProxy, // true for HTTPS (production), false for HTTP (development)
                 httpOnly: true,
                 maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-                sameSite: 'lax',
-                path: '/'
+                sameSite: isBehindProxy ? 'none' : 'lax', // 'none' for cross-site cookies (HTTPS), 'lax' for same-site
+                path: '/',
+                domain: undefined // Let browser decide
             },
-            rolling: true // Reset expiration on every request
+            rolling: true, // Reset expiration on every request
+            proxy: isBehindProxy // Trust proxy headers
         }));
+        
+        // Trust proxy if behind one (like Render.com)
+        if (isBehindProxy) {
+            this.app.set('trust proxy', 1);
+        }
         this.app.use(express_1.default.json());
         this.app.use((0, cookie_parser_1.default)());
         this.app.use((req, res, next) => {
