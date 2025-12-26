@@ -203,6 +203,32 @@ function initializeTooltips() {
 }
 
 function setupGlobalEvents() {
+    // Logout button handler
+    const logoutButton = document.getElementById('logoutButton');
+    if (logoutButton) {
+        logoutButton.addEventListener('click', async () => {
+            if (confirm(document.documentElement.dir === 'rtl' ? 'هل أنت متأكد من تسجيل الخروج؟' : 'Are you sure you want to logout?')) {
+                try {
+                    const response = await fetch('/api/auth/logout', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        window.location.href = '/login';
+                    } else {
+                        alert(data.error || 'Failed to logout');
+                    }
+                } catch (error) {
+                    console.error('Logout error:', error);
+                    window.location.href = '/login';
+                }
+            }
+        });
+    }
+
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             const target = document.querySelector(this.getAttribute('href'));
