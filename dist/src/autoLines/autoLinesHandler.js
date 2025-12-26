@@ -25,8 +25,29 @@ class AutoLinesHandler {
             const channel = message.channel;
             if (!channel || channel.type !== discord_js_1.ChannelType.GuildText)
                 return;
-            // Add a divider line after the message
-            await channel.send("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━").catch(() => { });
+            const autoLinesSettings = settings.autoLines;
+            let dividerText = "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━";
+            if (autoLinesSettings.customFormat && autoLinesSettings.customFormat.trim()) {
+                dividerText = autoLinesSettings.customFormat;
+            }
+            else if (autoLinesSettings.style) {
+                switch (autoLinesSettings.style) {
+                    case 'dashed':
+                        dividerText = "┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅";
+                        break;
+                    case 'dotted':
+                        dividerText = "┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈";
+                        break;
+                    case 'equals':
+                        dividerText = "════════════════════════════════════════";
+                        break;
+                    case 'solid':
+                    default:
+                        dividerText = "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━";
+                        break;
+                }
+            }
+            await channel.send(dividerText).catch(() => { });
         }
         catch (error) {
             console.error("Error adding auto line divider:", error);
