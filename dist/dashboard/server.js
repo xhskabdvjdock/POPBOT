@@ -71,12 +71,19 @@ class Dashboard {
             return next();
         }
         // Check if user is authenticated
-        if (req.session && req.session.authenticated) {
+        if (req.session && req.session.authenticated === true) {
+            // Touch session to keep it alive
+            req.session.touch();
             return next();
         }
         // Redirect to login - always show login first
         const currentLang = req.cookies?.preferredLanguage || 'en';
         const redirectPath = req.path === '/' ? '/' : req.path;
+        console.log('Auth check failed, redirecting to login. Session:', {
+            exists: !!req.session,
+            authenticated: req.session?.authenticated,
+            sessionID: req.sessionID
+        });
         return res.redirect(`/login?redirect=${encodeURIComponent(redirectPath)}&lang=${currentLang}`);
     }
     loadLocales() {
@@ -153,16 +160,18 @@ class Dashboard {
         });
         const isProduction = process.env.NODE_ENV === 'production';
         this.app.use((0, express_session_1.default)({
-            secret: config_1.default.dashboard.secret,
-            resave: true,
+            secret: config_1.default.dashboard.secret || 'nun-sever-secret-key-change-this',
+            resave: false,
             saveUninitialized: false,
             name: 'dashboard.sid',
             cookie: { 
-                secure: isProduction,
+                secure: false, // Set to false for development, true for production with HTTPS
                 httpOnly: true,
-                maxAge: 24 * 60 * 60 * 1000, // 24 hours
-                sameSite: 'lax'
-            }
+                maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+                sameSite: 'lax',
+                path: '/'
+            },
+            rolling: true // Reset expiration on every request
         }));
         this.app.use(express_1.default.json());
         this.app.use((0, cookie_parser_1.default)());
@@ -209,26 +218,33 @@ class Dashboard {
         });
         this.app.post('/api/auth/login', (req, res) => {
             const { username, password } = req.body;
+            console.log('Login attempt:', { username, hasPassword: !!password });
+            console.log('Auth config:', { expectedUsername: this.authConfig.username });
+            
             if (username === this.authConfig.username && password === this.authConfig.password) {
-                // Regenerate session to prevent session fixation attacks
-                req.session.regenerate((err) => {
+                // Set session data directly
+                req.session.authenticated = true;
+                req.session.username = username;
+                req.session.loginTime = new Date();
+                
+                console.log('Session set:', {
+                    authenticated: req.session.authenticated,
+                    username: req.session.username,
+                    sessionID: req.sessionID
+                });
+                
+                // Save session and send response
+                req.session.save((err) => {
                     if (err) {
-                        console.error('Session regeneration error:', err);
-                        return res.status(500).json({ success: false, error: 'Session error' });
+                        console.error('Session save error:', err);
+                        return res.status(500).json({ success: false, error: 'Session save error' });
                     }
-                    req.session.authenticated = true;
-                    req.session.username = username;
-                    req.session.loginTime = new Date();
-                    req.session.save((err) => {
-                        if (err) {
-                            console.error('Session save error:', err);
-                            return res.status(500).json({ success: false, error: 'Session save error' });
-                        }
-                        const redirectUrl = req.query.redirect || req.body.redirect || '/';
-                        return res.json({ success: true, message: 'Login successful', redirect: redirectUrl });
-                    });
+                    const redirectUrl = req.query.redirect || req.body.redirect || '/';
+                    console.log('Login successful, redirecting to:', redirectUrl);
+                    return res.json({ success: true, message: 'Login successful', redirect: redirectUrl });
                 });
             } else {
+                console.log('Invalid credentials');
                 return res.status(401).json({ success: false, error: 'Invalid username or password' });
             }
         });
