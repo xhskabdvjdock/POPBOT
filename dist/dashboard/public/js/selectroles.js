@@ -352,24 +352,36 @@ function hideSaveBar() {
 function collectSelectRolesSettings() {
     const buttons = [];
     document.querySelectorAll('.role-button-item').forEach(item => {
-        const label = item.querySelector('.button-label')?.value || '';
-        const emoji = item.querySelector('.button-emoji')?.value || '';
-        const roleId = item.querySelector('.button-roleId')?.value || '';
+        const labelInput = item.querySelector('.button-label');
+        const emojiInput = item.querySelector('.button-emoji');
+        const roleSelect = item.querySelector('.button-roleId');
+        
+        const label = labelInput ? labelInput.value.trim() : '';
+        const emoji = emojiInput ? emojiInput.value.trim() : '';
+        const roleId = roleSelect ? roleSelect.value.trim() : '';
+
+        console.log('Collecting button:', { label, emoji, roleId });
 
         if (label && roleId) {
             buttons.push({
                 label: label,
-                emoji: emoji,
+                emoji: emoji || undefined,
                 roleId: roleId
             });
+        } else {
+            console.warn('Skipping button - missing required fields:', { label, roleId });
         }
     });
 
+    const enabledToggle = document.getElementById('selectroles-enabled');
+    const enabled = enabledToggle ? enabledToggle.checked : false;
+
     const settings = {
-        enabled: document.getElementById('selectroles-enabled')?.checked || false,
+        enabled: enabled,
         buttons: buttons
     };
 
+    console.log('Collected settings:', settings);
     return settings;
 }
 
@@ -378,30 +390,56 @@ async function saveSelectRolesSettings() {
     try {
         const settings = collectSelectRolesSettings();
         
+        if (settings.buttons.length === 0 && settings.enabled) {
+            const confirmMsg = document.documentElement.dir === 'rtl' 
+                ? 'لا توجد أزرار مضافة. هل تريد حفظ الإعدادات بدون أزرار؟'
+                : 'No buttons added. Do you want to save settings without buttons?';
+            if (!confirm(confirmMsg)) {
+                return;
+            }
+        }
+        
         const response = await fetch('/api/selectroles/settings', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
+            credentials: 'same-origin',
             body: JSON.stringify(settings)
         });
 
         const data = await response.json();
-        if (!response.ok) throw new Error(data.error || 'Failed to save settings');
+        if (!response.ok) {
+            throw new Error(data.error || 'Failed to save settings');
+        }
 
         console.log('Settings saved successfully:', data);
         hideSaveBar();
+        
+        const successMsg = document.documentElement.dir === 'rtl' 
+            ? 'تم حفظ إعدادات اختيار الرتب بنجاح'
+            : 'Select roles settings saved successfully';
+        
         if (window.utils && window.utils.showToast) {
-            utils.showToast('Select roles settings saved successfully', 'success');
+            utils.showToast(successMsg, 'success');
         } else {
-            alert('Select roles settings saved successfully');
+            alert(successMsg);
         }
+        
+        // Reload page to show updated settings
+        setTimeout(() => {
+            window.location.reload();
+        }, 1000);
     } catch (error) {
         console.error('Error saving select roles settings:', error);
+        const errorMsg = document.documentElement.dir === 'rtl' 
+            ? 'فشل حفظ إعدادات اختيار الرتب: ' + error.message
+            : 'Failed to save select roles settings: ' + error.message;
+        
         if (window.utils && window.utils.showToast) {
-            utils.showToast('Failed to save select roles settings', 'error');
+            utils.showToast(errorMsg, 'error');
         } else {
-            alert('Failed to save select roles settings');
+            alert(errorMsg);
         }
     }
 }
