@@ -11,9 +11,10 @@
         </div>
 
         <!-- AutoMod Section -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+        <div class="bg-[#1a2332] rounded-[12px] shadow-lg border border-white/10 p-6 transition-all duration-300 hover:border-red-500/30">
             <div class="flex items-center justify-between mb-6">
-                <h2 class="text-2xl font-bold text-gray-800 dark:text-white">
+                <h2 class="text-2xl font-bold text-white flex items-center">
+                    <i class="fas fa-robot <%= currentLang === 'ar' ? 'ml-3' : 'mr-3' %> text-red-400"></i>
                     <%= currentLang === 'ar' ? 'الإشراف التلقائي' : 'AutoMod' %>
                 </h2>
                 <label class="switch-large">
@@ -25,9 +26,10 @@
 
             <div class="space-y-6">
                 <!-- Anti-Link -->
-                <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                <div class="bg-[#2d3748] border border-white/10 rounded-[12px] p-4 hover:border-red-500/30 transition-all">
                     <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-semibold text-gray-800 dark:text-white">
+                        <h3 class="text-lg font-semibold text-white flex items-center">
+                            <i class="fas fa-link <%= currentLang === 'ar' ? 'ml-2' : 'mr-2' %> text-red-400"></i>
                             <%= currentLang === 'ar' ? 'منع الروابط' : 'Anti-Link' %>
                         </h3>
                         <label class="switch">
@@ -36,15 +38,24 @@
                             <span class="slider"></span>
                         </label>
                     </div>
-                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                    <p class="text-sm text-gray-400 mb-4">
                         <%= currentLang === 'ar' ? 'يمنع إرسال الروابط في الرسائل' : 'Prevents sending links in messages' %>
                     </p>
+                    <div class="mt-4">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">
+                            <%= currentLang === 'ar' ? 'الروابط المسموحة (مفصولة بفواصل)' : 'Whitelisted Links (comma-separated)' %>
+                        </label>
+                        <textarea id="automod-whitelisted-links" rows="2"
+                                  placeholder="<%= currentLang === 'ar' ? 'مثال: discord.com, youtube.com' : 'Example: discord.com, youtube.com' %>"
+                                  class="w-full px-3 py-2 bg-[#374151] border border-white/10 rounded-[12px] text-white focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all resize-none"><%= settings.autoMod?.antiLink?.whitelistedLinks?.join(', ') || '' %></textarea>
+                    </div>
                 </div>
 
                 <!-- Anti-Spam -->
-                <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                <div class="bg-[#2d3748] border border-white/10 rounded-[12px] p-4 hover:border-red-500/30 transition-all">
                     <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-semibold text-gray-800 dark:text-white">
+                        <h3 class="text-lg font-semibold text-white flex items-center">
+                            <i class="fas fa-ban <%= currentLang === 'ar' ? 'ml-2' : 'mr-2' %> text-red-400"></i>
                             <%= currentLang === 'ar' ? 'منع الرسائل المكررة' : 'Anti-Spam' %>
                         </h3>
                         <label class="switch">
@@ -53,17 +64,72 @@
                             <span class="slider"></span>
                         </label>
                     </div>
-                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                    <p class="text-sm text-gray-400 mb-4">
                         <%= currentLang === 'ar' ? 'يمنع إرسال الرسائل المكررة بسرعة' : 'Prevents sending duplicate messages quickly' %>
                     </p>
+                    <div class="grid grid-cols-2 gap-4 mt-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">
+                                <%= currentLang === 'ar' ? 'عدد الرسائل' : 'Message Count' %>
+                            </label>
+                            <input type="number" id="automod-spam-count" min="2" max="10"
+                                   value="<%= settings.autoMod?.antiSpam?.messageCount || 5 %>"
+                                   class="w-full px-3 py-2 bg-[#374151] border border-white/10 rounded-[12px] text-white focus:border-red-500 focus:ring-2 focus:ring-red-500/20">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">
+                                <%= currentLang === 'ar' ? 'الوقت (بالثواني)' : 'Time (seconds)' %>
+                            </label>
+                            <input type="number" id="automod-spam-time" min="1" max="60"
+                                   value="<%= settings.autoMod?.antiSpam?.timeWindow || 10 %>"
+                                   class="w-full px-3 py-2 bg-[#374151] border border-white/10 rounded-[12px] text-white focus:border-red-500 focus:ring-2 focus:ring-red-500/20">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Word Filter -->
+                <div class="bg-[#2d3748] border border-white/10 rounded-[12px] p-4 hover:border-red-500/30 transition-all">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-white flex items-center">
+                            <i class="fas fa-filter <%= currentLang === 'ar' ? 'ml-2' : 'mr-2' %> text-red-400"></i>
+                            <%= currentLang === 'ar' ? 'فلترة الكلمات' : 'Word Filter' %>
+                        </h3>
+                        <label class="switch">
+                            <input type="checkbox" id="automod-wordFilter-enabled"
+                                   <%= settings.autoMod?.wordFilter?.enabled ? 'checked' : '' %>>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <p class="text-sm text-gray-400 mb-4">
+                        <%= currentLang === 'ar' ? 'منع كلمات أو عبارات محددة' : 'Block specific words or phrases' %>
+                    </p>
+                    <div class="mt-4">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">
+                            <%= currentLang === 'ar' ? 'الكلمات المحظورة (سطر واحد لكل كلمة)' : 'Banned Words (one per line)' %>
+                        </label>
+                        <textarea id="automod-banned-words" rows="6"
+                                  placeholder="<%= currentLang === 'ar' ? 'أدخل كلمة واحدة في كل سطر' : 'Enter one word per line' %>"
+                                  class="w-full px-3 py-2 bg-[#374151] border border-white/10 rounded-[12px] text-white focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all resize-none font-mono text-sm"><%= settings.autoMod?.wordFilter?.bannedWords?.join('\n') || '' %></textarea>
+                        <div class="mt-2 flex items-center gap-4">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" id="automod-wordFilter-caseSensitive"
+                                       <%= settings.autoMod?.wordFilter?.caseSensitive ? 'checked' : '' %>
+                                       class="w-4 h-4 rounded border-white/20 bg-[#374151] text-red-500 focus:ring-2 focus:ring-red-500/20">
+                                <span class="text-sm text-gray-300">
+                                    <%= currentLang === 'ar' ? 'حساس لحالة الأحرف' : 'Case Sensitive' %>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- Auto Lines Section -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+        <div class="bg-[#1a2332] rounded-[12px] shadow-lg border border-white/10 p-6 transition-all duration-300 hover:border-orange-500/30">
             <div class="flex items-center justify-between mb-6">
-                <h2 class="text-2xl font-bold text-gray-800 dark:text-white">
+                <h2 class="text-2xl font-bold text-white flex items-center">
+                    <i class="fas fa-align-left <%= currentLang === 'ar' ? 'ml-3' : 'mr-3' %> text-orange-400"></i>
                     <%= currentLang === 'ar' ? 'الرسائل التلقائية' : 'Auto Lines' %>
                 </h2>
                 <label class="switch-large">
@@ -74,31 +140,110 @@
             </div>
 
             <div class="space-y-4">
-                <p class="text-sm text-gray-600 dark:text-gray-400">
+                <p class="text-sm text-gray-400">
                     <%= currentLang === 'ar' ? 'إضافة خط فاصل بعد كل رسالة' : 'Add a divider line after every message' %>
                 </p>
-                <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg">
-                    <p class="text-sm text-gray-700 dark:text-gray-300">
-                        <strong><%= currentLang === 'ar' ? 'ملاحظة:' : 'Note:' %></strong>
-                        <%= currentLang === 'ar' ? 'سيتم إضافة خط فاصل تلقائياً بعد كل رسالة في القنوات المحددة.' : 'A divider line will be automatically added after every message in specified channels.' %>
-                    </p>
+                
+                <!-- Line Formatting Tool -->
+                <div class="bg-[#2d3748] border border-white/10 rounded-[12px] p-4">
+                    <h3 class="text-lg font-semibold text-white mb-4 flex items-center">
+                        <i class="fas fa-paint-brush <%= currentLang === 'ar' ? 'ml-2' : 'mr-2' %> text-orange-400"></i>
+                        <%= currentLang === 'ar' ? 'أداة تنسيق الخط' : 'Line Formatting Tool' %>
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">
+                                <%= currentLang === 'ar' ? 'نمط الخط' : 'Line Style' %>
+                            </label>
+                            <select id="autolines-style" class="w-full px-3 py-2 bg-[#374151] border border-white/10 rounded-[12px] text-white focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all">
+                                <option value="solid" <%= settings.autoLines?.style === 'solid' ? 'selected' : '' %>>
+                                    <%= currentLang === 'ar' ? 'خط صلب' : 'Solid Line' %>
+                                </option>
+                                <option value="dashed" <%= settings.autoLines?.style === 'dashed' ? 'selected' : '' %>>
+                                    <%= currentLang === 'ar' ? 'خط متقطع' : 'Dashed Line' %>
+                                </option>
+                                <option value="dotted" <%= settings.autoLines?.style === 'dotted' ? 'selected' : '' %>>
+                                    <%= currentLang === 'ar' ? 'خط منقط' : 'Dotted Line' %>
+                                </option>
+                                <option value="custom" <%= settings.autoLines?.style === 'custom' ? 'selected' : '' %>>
+                                    <%= currentLang === 'ar' ? 'مخصص' : 'Custom' %>
+                                </option>
+                            </select>
+                        </div>
+                        
+                        <div id="custom-line-format" class="<%= settings.autoLines?.style === 'custom' ? '' : 'hidden' %>">
+                            <label class="block text-sm font-medium text-gray-300 mb-2">
+                                <%= currentLang === 'ar' ? 'تنسيق مخصص' : 'Custom Format' %>
+                            </label>
+                            <input type="text" id="autolines-custom" 
+                                   value="<%= settings.autoLines?.customFormat || '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━' %>"
+                                   placeholder="━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                                   class="w-full px-3 py-2 bg-[#374151] border border-white/10 rounded-[12px] text-white focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all font-mono">
+                            <p class="text-xs text-gray-400 mt-1">
+                                <%= currentLang === 'ar' ? 'استخدم أي أحرف أو رموز للخط الفاصل' : 'Use any characters or symbols for the divider line' %>
+                            </p>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">
+                                <%= currentLang === 'ar' ? 'لون الخط' : 'Line Color' %>
+                            </label>
+                            <div class="flex items-center gap-3">
+                                <input type="color" id="autolines-color" 
+                                       value="<%= settings.autoLines?.color || '#4a5568' %>"
+                                       class="w-16 h-12 rounded-[12px] cursor-pointer border-2 border-white/10 hover:border-orange-500/50 transition-all">
+                                <input type="text" id="autolines-color-text" 
+                                       value="<%= settings.autoLines?.color || '#4a5568' %>"
+                                       class="flex-1 px-3 py-2 bg-[#374151] border border-white/10 rounded-[12px] text-white focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">
+                                <%= currentLang === 'ar' ? 'القنوات المحددة' : 'Target Channels' %>
+                            </label>
+                            <select id="autolines-channels" multiple
+                                    class="w-full px-3 py-2 bg-[#374151] border border-white/10 rounded-[12px] text-white focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all min-h-[100px]">
+                                <!-- Channels will be populated by JavaScript -->
+                            </select>
+                            <p class="text-xs text-gray-400 mt-1">
+                                <%= currentLang === 'ar' ? 'اضغط Ctrl/Cmd لاختيار عدة قنوات. اتركه فارغاً لتفعيله في جميع القنوات.' : 'Press Ctrl/Cmd to select multiple channels. Leave empty to enable in all channels.' %>
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- Preview -->
+                    <div class="mt-6 p-4 bg-[#1a2332] rounded-[12px] border border-white/5">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">
+                            <%= currentLang === 'ar' ? 'معاينة' : 'Preview' %>
+                        </label>
+                        <div id="autolines-preview" class="text-center text-gray-400 py-2">
+                            <!-- Preview will be rendered here -->
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<div id="save-bar" class="fixed bottom-0 left-0 right-0 bg-yellow-500 text-white p-4 shadow-lg z-50 hidden">
-    <div class="container mx-auto flex items-center justify-between">
-        <span class="font-semibold">
-            <%= currentLang === 'ar' ? 'يوجد تغييرات غير محفوظة' : 'You have unsaved changes' %>
-        </span>
-        <div class="space-x-4">
-            <button id="save-automod" class="px-4 py-2 bg-green-600 rounded-lg hover:bg-green-700 transition-all">
-                <%= currentLang === 'ar' ? 'حفظ' : 'Save' %>
-            </button>
-            <button id="cancel-automod" class="px-4 py-2 bg-gray-600 rounded-lg hover:bg-gray-700 transition-all">
+<div id="save-bar" class="save-bar hidden">
+    <div class="save-bar-content">
+        <div class="save-bar-text">
+            <i class="fas fa-exclamation-triangle text-yellow-400"></i>
+            <span class="font-semibold">
+                <%= currentLang === 'ar' ? 'يوجد تغييرات غير محفوظة' : 'You have unsaved changes' %>
+            </span>
+        </div>
+        <div class="save-bar-buttons">
+            <button id="cancel-automod" class="reset-button">
+                <i class="fas fa-times <%= currentLang === 'ar' ? 'ml-2' : 'mr-2' %>"></i>
                 <%= currentLang === 'ar' ? 'إلغاء' : 'Cancel' %>
+            </button>
+            <button id="save-automod" class="save-button">
+                <i class="fas fa-save <%= currentLang === 'ar' ? 'ml-2' : 'mr-2' %>"></i>
+                <%= currentLang === 'ar' ? 'حفظ' : 'Save' %>
             </button>
         </div>
     </div>
