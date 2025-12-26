@@ -152,6 +152,11 @@
                     </select>
                 </div>
 
+                <button id="logoutButton" class="w-full flex items-center justify-center px-4 py-3 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl transition-all duration-300 group">
+                    <i class="fas fa-sign-out-alt mr-2 group-hover:scale-110 transition-transform"></i>
+                    <span><%= currentLang === 'ar' ? 'تسجيل الخروج' : 'Logout' %></span>
+                </button>
+
                 <div class="grid grid-cols-4 gap-2 pt-2 border-t border-gray-200 dark:border-gray-700">
                     <% const socialLinks = [
                         { url: 'https://github.com/wickstudio', icon: 'fa-github', color: 'hover:text-gray-900' },
