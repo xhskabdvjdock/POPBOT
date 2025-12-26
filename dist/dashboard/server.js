@@ -47,8 +47,11 @@ class Dashboard {
     }
     requireAuth(req, res, next) {
         // Allow login page and auth APIs without authentication
-        if (req.path === '/login' || 
-            req.path.startsWith('/api/auth') || 
+        if (req.path === '/login') {
+            return next();
+        }
+        // Allow static files
+        if (req.path.startsWith('/api/auth') || 
             req.path.startsWith('/public') ||
             req.path.startsWith('/css/') ||
             req.path.startsWith('/js/') ||
@@ -71,9 +74,10 @@ class Dashboard {
         if (req.session && req.session.authenticated) {
             return next();
         }
-        // Redirect to login
+        // Redirect to login - always show login first
         const currentLang = req.cookies?.preferredLanguage || 'en';
-        return res.redirect(`/login?redirect=${encodeURIComponent(req.path)}&lang=${currentLang}`);
+        const redirectPath = req.path === '/' ? '/' : req.path;
+        return res.redirect(`/login?redirect=${encodeURIComponent(redirectPath)}&lang=${currentLang}`);
     }
     loadLocales() {
         try {
@@ -187,11 +191,14 @@ class Dashboard {
                 return res.redirect('/');
             }
             const currentLang = req.cookies?.preferredLanguage || 'en';
+            // Disable layout for login page
+            res.locals.layout = false;
             return res.render('login', {
                 title: currentLang === 'ar' ? 'تسجيل الدخول' : 'Login',
                 currentLang,
                 locale: this.getLocale(currentLang),
-                path: '/login'
+                path: '/login',
+                layout: false
             });
         });
         this.app.post('/api/auth/login', (req, res) => {
