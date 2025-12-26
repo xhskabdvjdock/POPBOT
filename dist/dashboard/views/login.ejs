@@ -297,8 +297,9 @@
                 const data = await response.json();
 
                 if (response.ok && data.success) {
-                    // Success - redirect to dashboard
-                    window.location.href = '/';
+                    // Success - redirect to dashboard or saved redirect URL
+                    const redirectUrl = data.redirect || new URLSearchParams(window.location.search).get('redirect') || '/';
+                    window.location.href = redirectUrl;
                 } else {
                     // Show error
                     errorText.textContent = data.error || (document.documentElement.dir === 'rtl' ? 'اسم المستخدم أو كلمة المرور غير صحيحة' : 'Invalid username or password');
