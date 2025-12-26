@@ -1,120 +1,234 @@
 <%- contentFor('body') %>
 
 <div class="main-content" dir="<%= currentLang === 'ar' ? 'rtl' : 'ltr' %>">
-    <div class="space-y-6">
-        <div class="bg-gradient-to-r from-green-600 to-teal-600 text-white p-6 rounded-2xl mb-6">
-            <h1 class="text-3xl font-bold mb-2 flex items-center <%= currentLang === 'ar' ? 'flex-row-reverse' : '' %>">
-                <i class="fas fa-chart-line <%= currentLang === 'ar' ? 'ml-4' : 'mr-4' %>"></i>
-                <%= currentLang === 'ar' ? 'نظام المستويات' : 'Leveling System' %>
-            </h1>
-            <p class="text-white/80"><%= currentLang === 'ar' ? 'قم بتكوين نظام XP والمستويات للمستخدمين' : 'Configure XP and leveling system for users' %></p>
-        </div>
-
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-            <div class="flex items-center justify-between mb-6">
-                <h2 class="text-2xl font-bold text-gray-800 dark:text-white">
-                    <%= currentLang === 'ar' ? 'الإعدادات العامة' : 'General Settings' %>
-                </h2>
-                <label class="switch-large">
-                    <input type="checkbox" id="leveling-enabled" 
-                           <%= settings.leveling?.enabled ? 'checked' : '' %>>
-                    <span class="slider-large"></span>
-                </label>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Main Configuration Panel -->
+        <div class="lg:col-span-2 space-y-6">
+            <div class="bg-gradient-to-r from-green-600 to-teal-600 text-white p-6 rounded-[12px] mb-6 shadow-lg">
+                <h1 class="text-3xl font-bold mb-2 flex items-center <%= currentLang === 'ar' ? 'flex-row-reverse' : '' %>">
+                    <i class="fas fa-chart-line <%= currentLang === 'ar' ? 'ml-4' : 'mr-4' %>"></i>
+                    <%= currentLang === 'ar' ? 'نظام المستويات' : 'Leveling System' %>
+                </h1>
+                <p class="text-white/80"><%= currentLang === 'ar' ? 'قم بتكوين نظام XP والمستويات للمستخدمين' : 'Configure XP and leveling system for users' %></p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="form-group">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        <%= currentLang === 'ar' ? 'معدل اكتساب XP' : 'XP Gain Rate' %>
+            <!-- General Settings Card -->
+            <div class="bg-[#1a2332] rounded-[12px] shadow-lg border border-white/10 p-6 transition-all duration-300 hover:border-green-500/30">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold text-white flex items-center">
+                        <i class="fas fa-cog <%= currentLang === 'ar' ? 'ml-3' : 'mr-3' %> text-green-400"></i>
+                        <%= currentLang === 'ar' ? 'الإعدادات العامة' : 'General Settings' %>
+                    </h2>
+                    <label class="switch-large">
+                        <input type="checkbox" id="leveling-enabled" 
+                               <%= settings.leveling?.enabled ? 'checked' : '' %>>
+                        <span class="slider-large"></span>
                     </label>
-                    <div class="flex items-center space-x-4">
-                        <input type="range" id="leveling-xpRate" min="1" max="100" step="1"
-                               value="<%= settings.leveling?.xpPerMessage || 15 %>"
-                               class="flex-1">
-                        <span class="text-lg font-semibold text-gray-700 dark:text-gray-300 w-16 text-center" id="leveling-xpRate-value">
-                            <%= settings.leveling?.xpPerMessage || 15 %>
-                        </span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="form-group">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">
+                            <%= currentLang === 'ar' ? 'معدل اكتساب XP' : 'XP Gain Rate' %>
+                        </label>
+                        <div class="flex items-center space-x-4">
+                            <input type="range" id="leveling-xpRate" min="1" max="100" step="1"
+                                   value="<%= settings.leveling?.xpPerMessage || 15 %>"
+                                   class="flex-1 accent-green-500">
+                            <span class="text-lg font-semibold text-white w-16 text-center bg-[#374151] px-3 py-1 rounded-[8px]" id="leveling-xpRate-value">
+                                <%= settings.leveling?.xpPerMessage || 15 %>
+                            </span>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-1">
+                            <%= currentLang === 'ar' ? 'XP المكتسب لكل رسالة' : 'XP gained per message' %>
+                        </p>
                     </div>
-                    <p class="text-xs text-gray-500 mt-1">
-                        <%= currentLang === 'ar' ? 'XP المكتسب لكل رسالة' : 'XP gained per message' %>
-                    </p>
-                </div>
 
-                <div class="form-group">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        <%= currentLang === 'ar' ? 'وقت الانتظار (بالثواني)' : 'Cooldown (seconds)' %>
-                    </label>
-                    <input type="number" id="leveling-cooldown" min="1" max="300"
-                           value="<%= settings.leveling?.cooldown || 60 %>"
-                           class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg">
-                    <p class="text-xs text-gray-500 mt-1">
-                        <%= currentLang === 'ar' ? 'الوقت بين كل XP (افتراضي: 60 ثانية)' : 'Time between XP gains (default: 60 seconds)' %>
-                    </p>
-                </div>
+                    <div class="form-group">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">
+                            <%= currentLang === 'ar' ? 'وقت الانتظار (بالثواني)' : 'Cooldown (seconds)' %>
+                        </label>
+                        <input type="number" id="leveling-cooldown" min="1" max="300"
+                               value="<%= settings.leveling?.cooldown || 60 %>"
+                               class="w-full px-3 py-2 bg-[#374151] border border-white/10 rounded-[12px] text-white focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-all">
+                        <p class="text-xs text-gray-400 mt-1">
+                            <%= currentLang === 'ar' ? 'الوقت بين كل XP (افتراضي: 60 ثانية)' : 'Time between XP gains (default: 60 seconds)' %>
+                        </p>
+                    </div>
 
-                <div class="form-group">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        <%= currentLang === 'ar' ? 'قناة إشعارات المستوى' : 'Level Up Channel' %>
-                    </label>
-                    <select id="leveling-levelUpChannel" 
-                            class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg">
-                        <option value=""><%= currentLang === 'ar' ? 'لا شيء (إرسال في نفس القناة)' : 'None (send in same channel)' %></option>
-                        <% channels.forEach(channel => { %>
-                            <option value="<%= channel.id %>" 
-                                    <%= settings.leveling?.levelUpChannel === channel.id ? 'selected' : '' %>>
-                                <%= channel.name %>
-                            </option>
-                        <% }) %>
-                    </select>
-                </div>
+                    <div class="form-group">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">
+                            <%= currentLang === 'ar' ? 'قناة إشعارات المستوى' : 'Level Up Channel' %>
+                        </label>
+                        <select id="leveling-levelUpChannel" 
+                                class="w-full px-3 py-2 bg-[#374151] border border-white/10 rounded-[12px] text-white focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-all">
+                            <option value=""><%= currentLang === 'ar' ? 'لا شيء (إرسال في نفس القناة)' : 'None (send in same channel)' %></option>
+                            <% channels.forEach(channel => { %>
+                                <option value="<%= channel.id %>" 
+                                        <%= settings.leveling?.levelUpChannel === channel.id ? 'selected' : '' %>>
+                                    <%= channel.name %>
+                                </option>
+                            <% }) %>
+                        </select>
+                    </div>
 
-                <div class="form-group">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        <%= currentLang === 'ar' ? 'القنوات المستثناة' : 'Ignored Channels' %>
-                    </label>
-                    <select id="leveling-ignoredChannels" multiple
-                            class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg">
-                        <% channels.forEach(channel => { %>
-                            <option value="<%= channel.id %>" 
-                                    <%= settings.leveling?.ignoredChannels?.includes(channel.id) ? 'selected' : '' %>>
-                                <%= channel.name %>
-                            </option>
-                        <% }) %>
-                    </select>
-                    <p class="text-xs text-gray-500 mt-1">
-                        <%= currentLang === 'ar' ? 'اضغط Ctrl/Cmd لاختيار عدة قنوات' : 'Press Ctrl/Cmd to select multiple channels' %>
+                    <div class="form-group">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">
+                            <%= currentLang === 'ar' ? 'القنوات المستثناة' : 'Ignored Channels' %>
+                        </label>
+                        <select id="leveling-ignoredChannels" multiple
+                                class="w-full px-3 py-2 bg-[#374151] border border-white/10 rounded-[12px] text-white focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-all min-h-[100px]">
+                            <% channels.forEach(channel => { %>
+                                <option value="<%= channel.id %>" 
+                                        <%= settings.leveling?.ignoredChannels?.includes(channel.id) ? 'selected' : '' %>>
+                                    <%= channel.name %>
+                                </option>
+                            <% }) %>
+                        </select>
+                        <p class="text-xs text-gray-400 mt-1">
+                            <%= currentLang === 'ar' ? 'اضغط Ctrl/Cmd لاختيار عدة قنوات' : 'Press Ctrl/Cmd to select multiple channels' %>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Level Up Roles Card -->
+            <div class="bg-[#1a2332] rounded-[12px] shadow-lg border border-white/10 p-6 transition-all duration-300 hover:border-green-500/30">
+                <h2 class="text-2xl font-bold text-white mb-6 flex items-center">
+                    <i class="fas fa-trophy <%= currentLang === 'ar' ? 'ml-3' : 'mr-3' %> text-green-400"></i>
+                    <%= currentLang === 'ar' ? 'رتب المستويات' : 'Level Up Roles' %>
+                </h2>
+                <div id="level-roles-list" class="space-y-3">
+                    <!-- Level roles will be added here dynamically -->
+                </div>
+                <button id="add-level-role" class="mt-4 px-4 py-2 bg-gradient-to-r from-green-500 to-teal-500 text-white rounded-[12px] hover:from-green-600 hover:to-teal-600 transition-all">
+                    <i class="fas fa-plus <%= currentLang === 'ar' ? 'ml-2' : 'mr-2' %>"></i>
+                    <%= currentLang === 'ar' ? 'إضافة رتبة' : 'Add Role' %>
+                </button>
+            </div>
+
+            <!-- Rank Card Customizer -->
+            <div class="bg-[#1a2332] rounded-[12px] shadow-lg border border-white/10 p-6 transition-all duration-300 hover:border-green-500/30">
+                <h2 class="text-2xl font-bold text-white mb-6 flex items-center">
+                    <i class="fas fa-palette <%= currentLang === 'ar' ? 'ml-3' : 'mr-3' %> text-green-400"></i>
+                    <%= currentLang === 'ar' ? 'تخصيص بطاقة الرتبة' : 'Rank Card Customizer' %>
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="form-group">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">
+                            <%= currentLang === 'ar' ? 'لون الخلفية' : 'Background Color' %>
+                        </label>
+                        <div class="flex items-center gap-3">
+                            <input type="color" id="rank-card-bg" value="#1a2332"
+                                   class="w-16 h-12 rounded-[12px] cursor-pointer border-2 border-white/10 hover:border-green-500/50 transition-all">
+                            <input type="text" id="rank-card-bg-text" value="#1a2332"
+                                   class="flex-1 px-3 py-2 bg-[#374151] border border-white/10 rounded-[12px] text-white focus:border-green-500 focus:ring-2 focus:ring-green-500/20">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">
+                            <%= currentLang === 'ar' ? 'لون شريط التقدم' : 'Progress Bar Color' %>
+                        </label>
+                        <div class="flex items-center gap-3">
+                            <input type="color" id="rank-card-progress" value="#10b981"
+                                   class="w-16 h-12 rounded-[12px] cursor-pointer border-2 border-white/10 hover:border-green-500/50 transition-all">
+                            <input type="text" id="rank-card-progress-text" value="#10b981"
+                                   class="flex-1 px-3 py-2 bg-[#374151] border border-white/10 rounded-[12px] text-white focus:border-green-500 focus:ring-2 focus:ring-green-500/20">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">
+                            <%= currentLang === 'ar' ? 'لون النص' : 'Text Color' %>
+                        </label>
+                        <div class="flex items-center gap-3">
+                            <input type="color" id="rank-card-text" value="#ffffff"
+                                   class="w-16 h-12 rounded-[12px] cursor-pointer border-2 border-white/10 hover:border-green-500/50 transition-all">
+                            <input type="text" id="rank-card-text-color" value="#ffffff"
+                                   class="flex-1 px-3 py-2 bg-[#374151] border border-white/10 rounded-[12px] text-white focus:border-green-500 focus:ring-2 focus:ring-green-500/20">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">
+                            <%= currentLang === 'ar' ? 'خلفية مخصصة (URL)' : 'Custom Background (URL)' %>
+                        </label>
+                        <input type="text" id="rank-card-background-url" placeholder="https://example.com/image.png"
+                               class="w-full px-3 py-2 bg-[#374151] border border-white/10 rounded-[12px] text-white focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-all">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formula Information -->
+            <div class="bg-[#1a2332] rounded-[12px] shadow-lg border border-white/10 p-6">
+                <h2 class="text-xl font-bold text-white mb-4 flex items-center">
+                    <i class="fas fa-calculator <%= currentLang === 'ar' ? 'ml-2' : 'mr-2' %> text-green-400"></i>
+                    <%= currentLang === 'ar' ? 'معلومات الصيغة' : 'Formula Information' %>
+                </h2>
+                <div class="bg-[#2d3748] p-4 rounded-[12px] border border-white/5">
+                    <p class="text-sm text-gray-300 mb-2">
+                        <strong><%= currentLang === 'ar' ? 'صيغة حساب XP للمستوى:' : 'XP calculation formula for level:' %></strong>
                     </p>
+                    <code class="text-sm text-green-400 font-mono">
+                        XP = 5 × (level²) + (50 × level) + 100
+                    </code>
                 </div>
             </div>
         </div>
 
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-            <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-6">
-                <%= currentLang === 'ar' ? 'معلومات الصيغة' : 'Formula Information' %>
-            </h2>
-            <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg">
-                <p class="text-sm text-gray-700 dark:text-gray-300 mb-2">
-                    <strong><%= currentLang === 'ar' ? 'صيغة حساب XP للمستوى:' : 'XP calculation formula for level:' %></strong>
-                </p>
-                <code class="text-sm text-gray-800 dark:text-gray-200">
-                    XP = 5 × (level²) + (50 × level) + 100
-                </code>
+        <!-- Preview Panel -->
+        <div class="lg:col-span-1">
+            <div class="sticky top-6 space-y-6">
+                <!-- Rank Card Preview -->
+                <div class="bg-[#1a2332] rounded-[12px] shadow-lg border border-white/10 p-6">
+                    <h2 class="text-xl font-bold text-white mb-4 flex items-center">
+                        <i class="fas fa-eye <%= currentLang === 'ar' ? 'ml-2' : 'mr-2' %> text-green-400"></i>
+                        <%= currentLang === 'ar' ? 'معاينة بطاقة الرتبة' : 'Rank Card Preview' %>
+                    </h2>
+                    <div id="rank-card-preview" class="bg-[#2d3748] rounded-[12px] p-4 border border-white/5">
+                        <!-- Rank card preview will be rendered here -->
+                    </div>
+                </div>
+
+                <!-- Leaderboard Preview -->
+                <div class="bg-[#1a2332] rounded-[12px] shadow-lg border border-white/10 p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-xl font-bold text-white flex items-center">
+                            <i class="fas fa-trophy <%= currentLang === 'ar' ? 'ml-2' : 'mr-2' %> text-green-400"></i>
+                            <%= currentLang === 'ar' ? 'معاينة المتصدرين' : 'Leaderboard Preview' %>
+                        </h2>
+                        <label class="switch">
+                            <input type="checkbox" id="leaderboard-preview-toggle" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div id="leaderboard-preview" class="space-y-2">
+                        <!-- Leaderboard preview will be rendered here -->
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<div id="save-bar" class="fixed bottom-0 left-0 right-0 bg-yellow-500 text-white p-4 shadow-lg z-50 hidden">
-    <div class="container mx-auto flex items-center justify-between">
-        <span class="font-semibold">
-            <%= currentLang === 'ar' ? 'يوجد تغييرات غير محفوظة' : 'You have unsaved changes' %>
-        </span>
-        <div class="space-x-4">
-            <button id="save-leveling" class="px-4 py-2 bg-green-600 rounded-lg hover:bg-green-700 transition-all">
-                <%= currentLang === 'ar' ? 'حفظ' : 'Save' %>
-            </button>
-            <button id="cancel-leveling" class="px-4 py-2 bg-gray-600 rounded-lg hover:bg-gray-700 transition-all">
+<div id="save-bar" class="save-bar hidden">
+    <div class="save-bar-content">
+        <div class="save-bar-text">
+            <i class="fas fa-exclamation-triangle text-yellow-400"></i>
+            <span class="font-semibold">
+                <%= currentLang === 'ar' ? 'يوجد تغييرات غير محفوظة' : 'You have unsaved changes' %>
+            </span>
+        </div>
+        <div class="save-bar-buttons">
+            <button id="cancel-leveling" class="reset-button">
+                <i class="fas fa-times <%= currentLang === 'ar' ? 'ml-2' : 'mr-2' %>"></i>
                 <%= currentLang === 'ar' ? 'إلغاء' : 'Cancel' %>
+            </button>
+            <button id="save-leveling" class="save-button">
+                <i class="fas fa-save <%= currentLang === 'ar' ? 'ml-2' : 'mr-2' %>"></i>
+                <%= currentLang === 'ar' ? 'حفظ' : 'Save' %>
             </button>
         </div>
     </div>
