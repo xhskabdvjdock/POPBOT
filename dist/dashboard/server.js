@@ -1749,8 +1749,13 @@ class Dashboard {
                     ...settings
                 };
                 (0, fs_1.writeFileSync)(settingsPath, JSON.stringify(currentSettings, null, 4), 'utf8');
+                // Reload settings in client
                 this.client.settings = currentSettings;
-                console.log('Welcome settings saved:', currentSettings.welcome);
+                // Trigger settings reload if watcher exists
+                if (this.client.reloadSettings) {
+                    this.client.reloadSettings();
+                }
+                console.log('Welcome settings saved and reloaded:', currentSettings.welcome);
                 return res.json({
                     success: true,
                     settings: currentSettings.welcome
@@ -1787,8 +1792,13 @@ class Dashboard {
                     ...settings
                 };
                 (0, fs_1.writeFileSync)(settingsPath, JSON.stringify(currentSettings, null, 4), 'utf8');
+                // Reload settings in client
                 this.client.settings = currentSettings;
-                console.log('Leveling settings saved:', currentSettings.leveling);
+                // Trigger settings reload if watcher exists
+                if (this.client.reloadSettings) {
+                    this.client.reloadSettings();
+                }
+                console.log('Leveling settings saved and reloaded:', currentSettings.leveling);
                 return res.json({
                     success: true,
                     settings: currentSettings.leveling
@@ -1852,8 +1862,13 @@ class Dashboard {
                     ...settings
                 };
                 (0, fs_1.writeFileSync)(settingsPath, JSON.stringify(currentSettings, null, 4), 'utf8');
+                // Reload settings in client
                 this.client.settings = currentSettings;
-                console.log('Select roles settings saved:', currentSettings.selectRoles);
+                // Trigger settings reload if watcher exists
+                if (this.client.reloadSettings) {
+                    this.client.reloadSettings();
+                }
+                console.log('Select roles settings saved and reloaded:', currentSettings.selectRoles);
                 return res.json({
                     success: true,
                     settings: currentSettings.selectRoles
@@ -1937,8 +1952,18 @@ class Dashboard {
                     }
                 }
                 (0, fs_1.writeFileSync)(settingsPath, JSON.stringify(currentSettings, null, 4), 'utf8');
+                // Reload settings in client
                 this.client.settings = currentSettings;
-                console.log('AutoMod settings saved:', {
+                // Trigger settings reload if watcher exists
+                if (this.client.reloadSettings) {
+                    this.client.reloadSettings();
+                }
+                // Reload auto lines handler if exists
+                const autoLinesHandler = this.client.autoLinesHandler;
+                if (autoLinesHandler && autoLinesHandler.reload) {
+                    autoLinesHandler.reload();
+                }
+                console.log('AutoMod settings saved and reloaded:', {
                     autoMod: currentSettings.autoMod,
                     autoLines: currentSettings.autoLines
                 });
