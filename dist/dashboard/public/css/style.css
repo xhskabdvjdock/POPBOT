@@ -1017,6 +1017,56 @@ input:checked + .switch-slider:before {
     min-height: 100vh;
     background: var(--background-primary);
     padding-bottom: calc(2rem + 80px);
+    transition: margin-left var(--transition-speed) ease, opacity var(--transition-speed) ease;
+    animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Consistent card styling */
+.card, .stat-card, .protection-card, .bg-white.dark\:bg-gray-800 {
+    background: var(--background-secondary) !important;
+    border-radius: var(--border-radius) !important;
+    border: 1px solid var(--border-color) !important;
+    transition: all var(--transition-speed) ease !important;
+}
+
+.card:hover, .stat-card:hover, .protection-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    border-color: rgba(59, 130, 246, 0.3) !important;
+}
+
+/* Smooth page transitions */
+.page-transition-enter {
+    opacity: 0;
+    transform: translateX(20px);
+}
+
+.page-transition-enter-active {
+    opacity: 1;
+    transform: translateX(0);
+    transition: opacity var(--transition-speed) ease, transform var(--transition-speed) ease;
+}
+
+.page-transition-exit {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.page-transition-exit-active {
+    opacity: 0;
+    transform: translateX(-20px);
+    transition: opacity var(--transition-speed) ease, transform var(--transition-speed) ease;
 }
 
 [dir="rtl"] .sidebar {
@@ -2952,9 +3002,9 @@ input:checked + .slider:before {
 }
 
 :root {
-    --background-primary: #111827;
-    --background-secondary: #1f2937;
-    --background-tertiary: #374151;
+    --background-primary: #1a2332;
+    --background-secondary: #1a2332;
+    --background-tertiary: #2d3748;
     --text-primary: #f3f4f6;
     --text-secondary: #d1d5db;
     --text-muted: #9ca3af;
@@ -2964,10 +3014,12 @@ input:checked + .slider:before {
     --danger-color: #ef4444;
     --success-color: #10b981;
     --sidebar-width: 280px;
-    --sidebar-bg: #1a1a1a;
+    --sidebar-bg: #1a2332;
     --sidebar-border: rgba(255, 255, 255, 0.1);
     --sidebar-hover: rgba(59, 130, 246, 0.1);
     --sidebar-active: #3B82F6;
+    --border-radius: 12px;
+    --transition-speed: 0.3s;
 }
 
 
@@ -3831,13 +3883,156 @@ input:checked + .slider:before {
 }
 
 body {
-    background-color: #111827 !important;
+    background-color: #1a2332 !important;
     color: #f3f4f6 !important;
+    transition: background-color var(--transition-speed) ease;
+}
+
+/* Smooth category switching animations */
+.nav-link {
+    transition: all var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.nav-link:hover {
+    transform: translateX(4px);
+}
+
+.nav-link.active {
+    transform: translateX(0);
+    animation: activePulse 0.3s ease-out;
+}
+
+@keyframes activePulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.02);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Enhanced form inputs */
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="password"],
+textarea,
+select {
+    border-radius: var(--border-radius) !important;
+    transition: all var(--transition-speed) ease !important;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+textarea:focus,
+select:focus {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2) !important;
+}
+
+/* Button animations */
+button, .btn, .btn-primary {
+    border-radius: var(--border-radius) !important;
+    transition: all var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+button:hover, .btn:hover, .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
+}
+
+button:active, .btn:active, .btn-primary:active {
+    transform: translateY(0);
+}
+
+/* Drag and drop styling */
+.role-button-item[draggable="true"] {
+    transition: all var(--transition-speed) ease;
+}
+
+.role-button-item.dragging {
+    opacity: 0.5;
+    transform: scale(0.98);
+}
+
+.role-button-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.2);
+}
+
+.drag-handle {
+    cursor: grab;
+    transition: color var(--transition-speed) ease;
+}
+
+.drag-handle:active {
+    cursor: grabbing;
+}
+
+/* Live preview containers */
+#welcome-preview-container,
+#roles-preview-container,
+#rank-card-preview,
+#leaderboard-preview,
+#autolines-preview {
+    transition: all var(--transition-speed) ease;
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* Smooth toggle switches */
+.switch-large, .switch {
+    transition: all var(--transition-speed) ease;
+}
+
+.switch-large:hover, .switch:hover {
+    transform: scale(1.05);
+}
+
+/* Loading states */
+.loading-shimmer {
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.05) 0%,
+        rgba(255, 255, 255, 0.1) 50%,
+        rgba(255, 255, 255, 0.05) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
 }
 
 .sidebar {
-    background-color: #1f2937 !important;
+    background-color: #1a2332 !important;
     border-color: rgba(255, 255, 255, 0.1) !important;
+    transition: all var(--transition-speed) ease;
+}
+
+.sidebar.show {
+    animation: slideInLeft 0.3s ease-out;
+}
+
+@keyframes slideInLeft {
+    from {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
 }
 
 .sidebar-header {
@@ -3845,8 +4040,9 @@ body {
 }
 
 .card, .stat-card, .protection-card {
-    background-color: #1f2937 !important;
+    background-color: #1a2332 !important;
     border-color: rgba(255, 255, 255, 0.1) !important;
+    border-radius: var(--border-radius) !important;
 }
 
 input, select, textarea {
