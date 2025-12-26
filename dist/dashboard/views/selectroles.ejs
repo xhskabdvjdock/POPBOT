@@ -2,7 +2,7 @@
 
 <div class="main-content" dir="<%= currentLang === 'ar' ? 'rtl' : 'ltr' %>">
     <div class="space-y-6">
-        <div class="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-6 rounded-2xl mb-6">
+        <div class="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-6 rounded-[12px] mb-6 shadow-lg">
             <h1 class="text-3xl font-bold mb-2 flex items-center <%= currentLang === 'ar' ? 'flex-row-reverse' : '' %>">
                 <i class="fas fa-id-badge <%= currentLang === 'ar' ? 'ml-4' : 'mr-4' %>"></i>
                 <%= currentLang === 'ar' ? 'مدير اختيار الرتب' : 'Select Roles Manager' %>
@@ -10,9 +10,10 @@
             <p class="text-white/80"><%= currentLang === 'ar' ? 'قم بإنشاء أزرار لاختيار الرتب' : 'Create role selection buttons for members' %></p>
         </div>
 
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+        <div class="bg-[#1a2332] rounded-[12px] shadow-lg border border-white/10 p-6 transition-all duration-300 hover:border-purple-500/30">
             <div class="flex items-center justify-between mb-6">
-                <h2 class="text-2xl font-bold text-gray-800 dark:text-white">
+                <h2 class="text-2xl font-bold text-white flex items-center">
+                    <i class="fas fa-cog <%= currentLang === 'ar' ? 'ml-3' : 'mr-3' %> text-purple-400"></i>
                     <%= currentLang === 'ar' ? 'الإعدادات العامة' : 'General Settings' %>
                 </h2>
                 <label class="switch-large">
@@ -23,92 +24,133 @@
             </div>
         </div>
 
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+        <div class="bg-[#1a2332] rounded-[12px] shadow-lg border border-white/10 p-6 transition-all duration-300 hover:border-purple-500/30">
             <div class="flex items-center justify-between mb-6">
-                <h2 class="text-2xl font-bold text-gray-800 dark:text-white">
+                <h2 class="text-2xl font-bold text-white flex items-center">
+                    <i class="fas fa-mouse-pointer <%= currentLang === 'ar' ? 'ml-3' : 'mr-3' %> text-purple-400"></i>
                     <%= currentLang === 'ar' ? 'أزرار الرتب' : 'Role Buttons' %>
                 </h2>
-                <button id="add-role-button" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all">
-                    <i class="fas fa-plus mr-2"></i>
+                <button id="add-role-button" class="px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-[12px] hover:from-purple-600 hover:to-pink-600 transition-all shadow-lg hover:shadow-xl transform hover:scale-105">
+                    <i class="fas fa-plus <%= currentLang === 'ar' ? 'ml-2' : 'mr-2' %>"></i>
                     <%= currentLang === 'ar' ? 'إضافة زر' : 'Add Button' %>
                 </button>
             </div>
 
-            <div id="role-buttons-list" class="space-y-4">
+            <div id="role-buttons-list" class="space-y-4" data-sortable="true">
                 <% if (settings.selectRoles?.buttons && settings.selectRoles.buttons.length > 0) { %>
                     <% settings.selectRoles.buttons.forEach((button, index) => { %>
-                        <div class="role-button-item bg-gray-100 dark:bg-gray-700 p-4 rounded-lg" data-index="<%= index %>">
-                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                                <div class="form-group">
-                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                        <%= currentLang === 'ar' ? 'تسمية الزر' : 'Button Label' %>
-                                    </label>
-                                    <input type="text" class="button-label w-full px-3 py-2 bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-lg"
-                                           value="<%= button.label || '' %>"
-                                           placeholder="<%= currentLang === 'ar' ? 'مثال: رتبة VIP' : 'Example: VIP Role' %>">
+                        <div class="role-button-item bg-[#2d3748] p-4 rounded-[12px] border border-white/10 hover:border-purple-500/50 transition-all cursor-move group" data-index="<%= index %>" draggable="true">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="drag-handle text-gray-400 hover:text-purple-400 cursor-grab active:cursor-grabbing">
+                                    <i class="fas fa-grip-vertical"></i>
                                 </div>
-                                <div class="form-group">
-                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                        <%= currentLang === 'ar' ? 'إيموجي' : 'Emoji' %>
-                                    </label>
-                                    <input type="text" class="button-emoji w-full px-3 py-2 bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-lg"
-                                           value="<%= button.emoji || '' %>"
-                                           placeholder="<%= currentLang === 'ar' ? 'مثال: ⭐' : 'Example: ⭐' %>">
+                                <div class="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div class="form-group">
+                                        <label class="block text-sm font-medium text-gray-300 mb-2">
+                                            <%= currentLang === 'ar' ? 'تسمية الزر' : 'Button Label' %>
+                                        </label>
+                                        <input type="text" class="button-label w-full px-3 py-2 bg-[#374151] border border-white/10 rounded-[12px] text-white focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all"
+                                               value="<%= button.label || '' %>"
+                                               placeholder="<%= currentLang === 'ar' ? 'مثال: رتبة VIP' : 'Example: VIP Role' %>">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="block text-sm font-medium text-gray-300 mb-2">
+                                            <%= currentLang === 'ar' ? 'إيموجي' : 'Emoji' %>
+                                        </label>
+                                        <div class="flex gap-2">
+                                            <input type="text" class="button-emoji flex-1 px-3 py-2 bg-[#374151] border border-white/10 rounded-[12px] text-white focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all"
+                                                   value="<%= button.emoji || '' %>"
+                                                   placeholder="<%= currentLang === 'ar' ? 'مثال: ⭐' : 'Example: ⭐' %>">
+                                            <button class="emoji-picker-btn px-3 py-2 bg-[#374151] border border-white/10 rounded-[12px] text-white hover:bg-[#4a5568] transition-all">
+                                                <i class="fas fa-smile"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="block text-sm font-medium text-gray-300 mb-2">
+                                            <%= currentLang === 'ar' ? 'الرتبة' : 'Role' %>
+                                        </label>
+                                        <select class="button-roleId w-full px-3 py-2 bg-[#374151] border border-white/10 rounded-[12px] text-white focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all">
+                                            <option value=""><%= currentLang === 'ar' ? 'اختر الرتبة' : 'Select Role' %></option>
+                                            <% roles.forEach(role => { %>
+                                                <option value="<%= role.id %>" 
+                                                        <%= button.roleId === role.id ? 'selected' : '' %>
+                                                        data-color="<%= role.color || '#ffffff' %>">
+                                                    <%= role.name %>
+                                                </option>
+                                            <% }) %>
+                                        </select>
+                                    </div>
                                 </div>
-                                <div class="form-group">
-                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                        <%= currentLang === 'ar' ? 'معرف الرتبة' : 'Role ID' %>
-                                    </label>
-                                    <select class="button-roleId w-full px-3 py-2 bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-lg">
-                                        <option value=""><%= currentLang === 'ar' ? 'اختر الرتبة' : 'Select Role' %></option>
-                                        <% roles.forEach(role => { %>
-                                            <option value="<%= role.id %>" 
-                                                    <%= button.roleId === role.id ? 'selected' : '' %>>
-                                                <%= role.name %>
-                                            </option>
-                                        <% }) %>
-                                    </select>
-                                </div>
-                                <div class="form-group flex items-end">
-                                    <button class="remove-button w-full px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all">
-                                        <i class="fas fa-trash mr-2"></i>
-                                        <%= currentLang === 'ar' ? 'حذف' : 'Remove' %>
-                                    </button>
+                                <button class="remove-button px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-[12px] transition-all group-hover:bg-red-500/30">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                            <div class="preview-button mt-3 p-3 bg-[#1a2332] rounded-[8px] border border-white/5">
+                                <div class="flex items-center gap-2 text-sm text-gray-400">
+                                    <span class="button-preview-emoji"><%= button.emoji || '🔘' %></span>
+                                    <span class="button-preview-label"><%= button.label || (currentLang === 'ar' ? 'تسمية الزر' : 'Button Label') %></span>
                                 </div>
                             </div>
                         </div>
                     <% }) %>
                 <% } else { %>
-                    <p class="text-gray-500 text-center py-8">
-                        <%= currentLang === 'ar' ? 'لا توجد أزرار رتب. اضغط على "إضافة زر" لإنشاء واحد.' : 'No role buttons. Click "Add Button" to create one.' %>
-                    </p>
+                    <div class="text-center py-12 border-2 border-dashed border-white/20 rounded-[12px]">
+                        <i class="fas fa-mouse-pointer text-4xl text-gray-500 mb-4"></i>
+                        <p class="text-gray-400">
+                            <%= currentLang === 'ar' ? 'لا توجد أزرار رتب. اضغط على "إضافة زر" لإنشاء واحد.' : 'No role buttons. Click "Add Button" to create one.' %>
+                        </p>
+                    </div>
                 <% } %>
             </div>
         </div>
 
-        <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-            <h3 class="text-lg font-semibold text-blue-800 dark:text-blue-200 mb-2">
-                <i class="fas fa-info-circle mr-2"></i>
+            </div>
+        </div>
+
+        <!-- Live Preview Panel -->
+        <div class="bg-[#1a2332] rounded-[12px] shadow-lg border border-white/10 p-6">
+            <h2 class="text-xl font-bold text-white mb-4 flex items-center">
+                <i class="fas fa-eye <%= currentLang === 'ar' ? 'ml-2' : 'mr-2' %> text-purple-400"></i>
+                <%= currentLang === 'ar' ? 'معاينة مباشرة' : 'Live Preview' %>
+            </h2>
+            <div class="bg-[#2d3748] rounded-[12px] p-4 border border-white/5">
+                <div id="roles-preview-container" class="space-y-2">
+                    <p class="text-gray-400 text-sm text-center py-4">
+                        <%= currentLang === 'ar' ? 'أضف أزرار لرؤية المعاينة' : 'Add buttons to see preview' %>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-blue-500/10 border border-blue-500/30 rounded-[12px] p-4">
+            <h3 class="text-lg font-semibold text-blue-300 mb-2 flex items-center">
+                <i class="fas fa-info-circle <%= currentLang === 'ar' ? 'ml-2' : 'mr-2' %>"></i>
                 <%= currentLang === 'ar' ? 'كيفية الاستخدام' : 'How to Use' %>
             </h3>
-            <p class="text-blue-700 dark:text-blue-300 text-sm">
-                <%= currentLang === 'ar' ? 'بعد حفظ الإعدادات، استخدم الأمر /setup-roles في القناة المطلوبة لإرسال رسالة الأزرار.' : 'After saving settings, use the /setup-roles command in the desired channel to send the button message.' %>
+            <p class="text-blue-200 text-sm">
+                <%= currentLang === 'ar' ? 'بعد حفظ الإعدادات، استخدم الأمر /setup-roles في القناة المطلوبة لإرسال رسالة الأزرار. يمكنك سحب وإفلات الأزرار لإعادة ترتيبها.' : 'After saving settings, use the /setup-roles command in the desired channel to send the button message. You can drag and drop buttons to reorder them.' %>
             </p>
         </div>
     </div>
 </div>
 
-<div id="save-bar" class="fixed bottom-0 left-0 right-0 bg-yellow-500 text-white p-4 shadow-lg z-50 hidden">
-    <div class="container mx-auto flex items-center justify-between">
-        <span class="font-semibold">
-            <%= currentLang === 'ar' ? 'يوجد تغييرات غير محفوظة' : 'You have unsaved changes' %>
-        </span>
-        <div class="space-x-4">
-            <button id="save-selectroles" class="px-4 py-2 bg-green-600 rounded-lg hover:bg-green-700 transition-all">
-                <%= currentLang === 'ar' ? 'حفظ' : 'Save' %>
-            </button>
-            <button id="cancel-selectroles" class="px-4 py-2 bg-gray-600 rounded-lg hover:bg-gray-700 transition-all">
+<div id="save-bar" class="save-bar hidden">
+    <div class="save-bar-content">
+        <div class="save-bar-text">
+            <i class="fas fa-exclamation-triangle text-yellow-400"></i>
+            <span class="font-semibold">
+                <%= currentLang === 'ar' ? 'يوجد تغييرات غير محفوظة' : 'You have unsaved changes' %>
+            </span>
+        </div>
+        <div class="save-bar-buttons">
+            <button id="cancel-selectroles" class="reset-button">
+                <i class="fas fa-times <%= currentLang === 'ar' ? 'ml-2' : 'mr-2' %>"></i>
                 <%= currentLang === 'ar' ? 'إلغاء' : 'Cancel' %>
+            </button>
+            <button id="save-selectroles" class="save-button">
+                <i class="fas fa-save <%= currentLang === 'ar' ? 'ml-2' : 'mr-2' %>"></i>
+                <%= currentLang === 'ar' ? 'حفظ' : 'Save' %>
             </button>
         </div>
     </div>
