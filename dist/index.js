@@ -697,6 +697,11 @@ class ModBot extends discord_js_1.Client {
             // Initialize Auto Lines Handler
             const autoLinesHandler = new autoLinesHandler_1.AutoLinesHandler(this);
             autoLinesHandler.start();
+            this.autoLinesHandler = autoLinesHandler;
+            const levelingHandler = new levelingHandler_1.LevelingHandler(this);
+            this.levelingHandler = levelingHandler;
+            const selectRolesManager = new selectRolesManager_1.SelectRolesManager(this);
+            this.selectRolesManager = selectRolesManager;
         }
         catch (error) {
             console.error('Error during initialization:', error);
