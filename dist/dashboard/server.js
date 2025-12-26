@@ -20,8 +20,40 @@ class Dashboard {
         this.app = (0, express_1.default)();
         this.startTime = new Date();
         this.loadLocales();
+        this.setupAuth();
         this.setup();
         this.routes();
+    }
+    setupAuth() {
+        const authConfigPath = (0, path_2.join)(process.cwd(), 'auth.json');
+        let authConfig = {
+            username: process.env.DASHBOARD_USERNAME || 'admin',
+            password: process.env.DASHBOARD_PASSWORD || 'admin123'
+        };
+        if ((0, fs_1.existsSync)(authConfigPath)) {
+            try {
+                const savedAuth = JSON.parse((0, fs_1.readFileSync)(authConfigPath, 'utf-8'));
+                authConfig = { ...authConfig, ...savedAuth };
+            }
+            catch (error) {
+                console.error('Error loading auth config:', error);
+            }
+        }
+        else {
+            (0, fs_1.writeFileSync)(authConfigPath, JSON.stringify(authConfig, null, 2), 'utf-8');
+            console.log('Created default auth.json file. Please change the default credentials!');
+        }
+        this.authConfig = authConfig;
+    }
+    requireAuth(req, res, next) {
+        if (req.path === '/login' || req.path.startsWith('/api/auth') || req.path.startsWith('/public')) {
+            return next();
+        }
+        if (req.session && req.session.authenticated) {
+            return next();
+        }
+        const currentLang = req.cookies?.preferredLanguage || 'en';
+        return res.redirect(`/login?redirect=${encodeURIComponent(req.path)}&lang=${currentLang}`);
     }
     loadLocales() {
         try {
@@ -127,8 +159,45 @@ class Dashboard {
             res.locals.breadcrumbs = this.getBreadcrumbs(req.path);
             next();
         });
+        this.app.use((req, res, next) => this.requireAuth(req, res, next));
     }
     routes() {
+        this.app.get('/login', (req, res) => {
+            if (req.session && req.session.authenticated) {
+                return res.redirect('/');
+            }
+            const currentLang = req.cookies?.preferredLanguage || 'en';
+            return res.render('login', {
+                title: currentLang === 'ar' ? 'تسجيل الدخول' : 'Login',
+                currentLang,
+                locale: this.getLocale(currentLang),
+                path: '/login'
+            });
+        });
+        this.app.post('/api/auth/login', (req, res) => {
+            const { username, password } = req.body;
+            if (username === this.authConfig.username && password === this.authConfig.password) {
+                req.session.authenticated = true;
+                req.session.username = username;
+                req.session.loginTime = new Date();
+                return res.json({ success: true, message: 'Login successful' });
+            }
+            return res.status(401).json({ success: false, error: 'Invalid username or password' });
+        });
+        this.app.post('/api/auth/logout', (req, res) => {
+            req.session.destroy((err) => {
+                if (err) {
+                    return res.status(500).json({ success: false, error: 'Failed to logout' });
+                }
+                return res.json({ success: true, message: 'Logged out successfully' });
+            });
+        });
+        this.app.get('/api/auth/check', (req, res) => {
+            return res.json({
+                authenticated: !!(req.session && req.session.authenticated),
+                username: req.session?.username || null
+            });
+        });
         this.app.get('/', async (_req, res) => {
             const currentLang = _req.cookies?.preferredLanguage || 'en';
             const locale = this.getLocale(currentLang);
@@ -1581,12 +1650,29 @@ class Dashboard {
                 const settings = req.body;
                 const settingsPath = (0, path_2.join)(process.cwd(), 'settings.json');
                 let currentSettings = JSON.parse((0, fs_1.readFileSync)(settingsPath, 'utf8'));
+                if (!currentSettings.welcome) {
+                    currentSettings.welcome = {
+                        enabled: false,
+                        channelId: '',
+                        message: '',
+                        embed: {
+                            title: 'Welcome!',
+                            description: 'Welcome to {server}, {user}!',
+                            color: '#3498db',
+                            thumbnail: '',
+                            image: '',
+                            footer: { text: '', iconURL: '' },
+                            timestamp: true
+                        }
+                    };
+                }
                 currentSettings.welcome = {
                     ...currentSettings.welcome,
                     ...settings
                 };
                 (0, fs_1.writeFileSync)(settingsPath, JSON.stringify(currentSettings, null, 4), 'utf8');
                 this.client.settings = currentSettings;
+                console.log('Welcome settings saved:', currentSettings.welcome);
                 return res.json({
                     success: true,
                     settings: currentSettings.welcome
@@ -1602,12 +1688,29 @@ class Dashboard {
                 const settings = req.body;
                 const settingsPath = (0, path_2.join)(process.cwd(), 'settings.json');
                 let currentSettings = JSON.parse((0, fs_1.readFileSync)(settingsPath, 'utf8'));
+                if (!currentSettings.leveling) {
+                    currentSettings.leveling = {
+                        enabled: false,
+                        xpPerMessage: 15,
+                        cooldown: 60,
+                        levelUpChannel: '',
+                        ignoredChannels: [],
+                        autoRoles: [],
+                        rankCard: {
+                            backgroundColor: '#1a2332',
+                            progressBarColor: '#10b981',
+                            textColor: '#ffffff',
+                            backgroundImage: ''
+                        }
+                    };
+                }
                 currentSettings.leveling = {
                     ...currentSettings.leveling,
                     ...settings
                 };
                 (0, fs_1.writeFileSync)(settingsPath, JSON.stringify(currentSettings, null, 4), 'utf8');
                 this.client.settings = currentSettings;
+                console.log('Leveling settings saved:', currentSettings.leveling);
                 return res.json({
                     success: true,
                     settings: currentSettings.leveling
@@ -1618,17 +1721,61 @@ class Dashboard {
                 return res.status(500).json({ error: 'Failed to save leveling settings' });
             }
         });
+        this.app.get('/api/leveling/leaderboard', async (req, res) => {
+            try {
+                const guildId = config_1.default.mainGuildId;
+                const limit = parseInt(req.query.limit) || 10;
+                const levelingHandler = this.client.levelingHandler;
+                if (!levelingHandler) {
+                    return res.status(500).json({ error: 'Leveling handler not initialized' });
+                }
+                const leaderboard = await levelingHandler.getLeaderboard(guildId, limit);
+                const formattedLeaderboard = await Promise.all(leaderboard.map(async (entry, index) => {
+                    try {
+                        const user = await this.client.users.fetch(entry.userId);
+                        return {
+                            rank: index + 1,
+                            userId: entry.userId,
+                            username: user.username,
+                            level: entry.level,
+                            xp: entry.xp
+                        };
+                    }
+                    catch {
+                        return {
+                            rank: index + 1,
+                            userId: entry.userId,
+                            username: 'Unknown User',
+                            level: entry.level,
+                            xp: entry.xp
+                        };
+                    }
+                }));
+                return res.json({ success: true, leaderboard: formattedLeaderboard });
+            }
+            catch (error) {
+                console.error('Error fetching leaderboard:', error);
+                return res.status(500).json({ error: 'Failed to fetch leaderboard' });
+            }
+        });
         this.app.post('/api/selectroles/settings', async (req, res) => {
             try {
                 const settings = req.body;
                 const settingsPath = (0, path_2.join)(process.cwd(), 'settings.json');
                 let currentSettings = JSON.parse((0, fs_1.readFileSync)(settingsPath, 'utf8'));
+                if (!currentSettings.selectRoles) {
+                    currentSettings.selectRoles = {
+                        enabled: false,
+                        buttons: []
+                    };
+                }
                 currentSettings.selectRoles = {
                     ...currentSettings.selectRoles,
                     ...settings
                 };
                 (0, fs_1.writeFileSync)(settingsPath, JSON.stringify(currentSettings, null, 4), 'utf8');
                 this.client.settings = currentSettings;
+                console.log('Select roles settings saved:', currentSettings.selectRoles);
                 return res.json({
                     success: true,
                     settings: currentSettings.selectRoles
@@ -1639,25 +1786,84 @@ class Dashboard {
                 return res.status(500).json({ error: 'Failed to save select roles settings' });
             }
         });
+        this.app.post('/api/selectroles/setup', async (req, res) => {
+            try {
+                const { channelId } = req.body;
+                if (!channelId) {
+                    return res.status(400).json({ error: 'Channel ID is required' });
+                }
+                const guild = this.client.guilds.cache.get(config_1.default.mainGuildId);
+                if (!guild) {
+                    return res.status(404).json({ error: 'Guild not found' });
+                }
+                const channel = await guild.channels.fetch(channelId);
+                if (!channel || channel.type !== discord_js_1.ChannelType.GuildText) {
+                    return res.status(400).json({ error: 'Invalid channel' });
+                }
+                const selectRolesManager = this.client.selectRolesManager;
+                if (!selectRolesManager) {
+                    return res.status(500).json({ error: 'Select roles manager not initialized' });
+                }
+                await selectRolesManager.sendRoleButtons(channel);
+                return res.json({ success: true, message: 'Role buttons sent successfully' });
+            }
+            catch (error) {
+                console.error('Error setting up role buttons:', error);
+                return res.status(500).json({ error: error.message || 'Failed to setup role buttons' });
+            }
+        });
         this.app.post('/api/automod/settings', async (req, res) => {
             try {
                 const settings = req.body;
                 const settingsPath = (0, path_2.join)(process.cwd(), 'settings.json');
                 let currentSettings = JSON.parse((0, fs_1.readFileSync)(settingsPath, 'utf8'));
                 if (settings.autoMod) {
+                    if (!currentSettings.autoMod) {
+                        currentSettings.autoMod = {
+                            enabled: false,
+                            antiLink: { enabled: false, whitelistedLinks: [] },
+                            antiSpam: { enabled: false, messageCount: 5, timeWindow: 10 },
+                            wordFilter: { enabled: false, bannedWords: [], caseSensitive: false },
+                            ignoredRoles: [],
+                            ignoredChannels: []
+                        };
+                    }
                     currentSettings.autoMod = {
                         ...currentSettings.autoMod,
                         ...settings.autoMod
                     };
+                    if (settings.autoMod.wordFilter?.bannedWords && Array.isArray(settings.autoMod.wordFilter.bannedWords)) {
+                        currentSettings.autoMod.wordFilter.bannedWords = settings.autoMod.wordFilter.bannedWords;
+                    }
+                    if (settings.autoMod.antiLink?.whitelistedLinks && Array.isArray(settings.autoMod.antiLink.whitelistedLinks)) {
+                        currentSettings.autoMod.antiLink.whitelistedLinks = settings.autoMod.antiLink.whitelistedLinks;
+                    }
                 }
                 if (settings.autoLines) {
+                    if (!currentSettings.autoLines) {
+                        currentSettings.autoLines = {
+                            enabled: false,
+                            style: 'solid',
+                            customFormat: '',
+                            color: '#4a5568',
+                            channels: []
+                        };
+                    }
                     currentSettings.autoLines = {
                         ...currentSettings.autoLines,
                         ...settings.autoLines
                     };
+                    const autoLinesHandler = this.client.autoLinesHandler;
+                    if (autoLinesHandler && autoLinesHandler.reload) {
+                        autoLinesHandler.reload();
+                    }
                 }
                 (0, fs_1.writeFileSync)(settingsPath, JSON.stringify(currentSettings, null, 4), 'utf8');
                 this.client.settings = currentSettings;
+                console.log('AutoMod settings saved:', {
+                    autoMod: currentSettings.autoMod,
+                    autoLines: currentSettings.autoLines
+                });
                 return res.json({
                     success: true,
                     settings: {
