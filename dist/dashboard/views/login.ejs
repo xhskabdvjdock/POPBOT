@@ -291,15 +291,18 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
+                    credentials: 'same-origin', // Important: include cookies
                     body: JSON.stringify({ username, password })
                 });
 
                 const data = await response.json();
 
                 if (response.ok && data.success) {
-                    // Success - redirect to dashboard or saved redirect URL
-                    const redirectUrl = data.redirect || new URLSearchParams(window.location.search).get('redirect') || '/';
-                    window.location.href = redirectUrl;
+                    // Success - wait a bit then redirect to ensure session is saved
+                    setTimeout(() => {
+                        const redirectUrl = data.redirect || new URLSearchParams(window.location.search).get('redirect') || '/';
+                        window.location.href = redirectUrl;
+                    }, 100);
                 } else {
                     // Show error
                     errorText.textContent = data.error || (document.documentElement.dir === 'rtl' ? 'اسم المستخدم أو كلمة المرور غير صحيحة' : 'Invalid username or password');
