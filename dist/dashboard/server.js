@@ -46,12 +46,32 @@ class Dashboard {
         this.authConfig = authConfig;
     }
     requireAuth(req, res, next) {
-        if (req.path === '/login' || req.path.startsWith('/api/auth') || req.path.startsWith('/public')) {
+        // Allow login page and auth APIs without authentication
+        if (req.path === '/login' || 
+            req.path.startsWith('/api/auth') || 
+            req.path.startsWith('/public') ||
+            req.path.startsWith('/css/') ||
+            req.path.startsWith('/js/') ||
+            req.path.startsWith('/images/') ||
+            req.path.startsWith('/fonts/') ||
+            req.path.endsWith('.css') ||
+            req.path.endsWith('.js') ||
+            req.path.endsWith('.png') ||
+            req.path.endsWith('.jpg') ||
+            req.path.endsWith('.jpeg') ||
+            req.path.endsWith('.gif') ||
+            req.path.endsWith('.svg') ||
+            req.path.endsWith('.ico') ||
+            req.path.endsWith('.woff') ||
+            req.path.endsWith('.woff2') ||
+            req.path.endsWith('.ttf')) {
             return next();
         }
+        // Check if user is authenticated
         if (req.session && req.session.authenticated) {
             return next();
         }
+        // Redirect to login
         const currentLang = req.cookies?.preferredLanguage || 'en';
         return res.redirect(`/login?redirect=${encodeURIComponent(req.path)}&lang=${currentLang}`);
     }
@@ -159,9 +179,9 @@ class Dashboard {
             res.locals.breadcrumbs = this.getBreadcrumbs(req.path);
             next();
         });
-        this.app.use((req, res, next) => this.requireAuth(req, res, next));
     }
     routes() {
+        // Auth routes - must be before requireAuth middleware
         this.app.get('/login', (req, res) => {
             if (req.session && req.session.authenticated) {
                 return res.redirect('/');
@@ -180,7 +200,8 @@ class Dashboard {
                 req.session.authenticated = true;
                 req.session.username = username;
                 req.session.loginTime = new Date();
-                return res.json({ success: true, message: 'Login successful' });
+                const redirectUrl = req.query.redirect || '/';
+                return res.json({ success: true, message: 'Login successful', redirect: redirectUrl });
             }
             return res.status(401).json({ success: false, error: 'Invalid username or password' });
         });
@@ -198,6 +219,11 @@ class Dashboard {
                 username: req.session?.username || null
             });
         });
+        
+        // Apply authentication middleware to all routes after auth routes
+        this.app.use((req, res, next) => this.requireAuth(req, res, next));
+        
+        // Dashboard home page - requires authentication
         this.app.get('/', async (_req, res) => {
             const currentLang = _req.cookies?.preferredLanguage || 'en';
             const locale = this.getLocale(currentLang);
