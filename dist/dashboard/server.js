@@ -154,9 +154,15 @@ class Dashboard {
         const isProduction = process.env.NODE_ENV === 'production';
         this.app.use((0, express_session_1.default)({
             secret: config_1.default.dashboard.secret,
-            resave: false,
+            resave: true,
             saveUninitialized: false,
-            cookie: { secure: isProduction }
+            name: 'dashboard.sid',
+            cookie: { 
+                secure: isProduction,
+                httpOnly: true,
+                maxAge: 24 * 60 * 60 * 1000, // 24 hours
+                sameSite: 'lax'
+            }
         }));
         this.app.use(express_1.default.json());
         this.app.use((0, cookie_parser_1.default)());
@@ -204,13 +210,27 @@ class Dashboard {
         this.app.post('/api/auth/login', (req, res) => {
             const { username, password } = req.body;
             if (username === this.authConfig.username && password === this.authConfig.password) {
-                req.session.authenticated = true;
-                req.session.username = username;
-                req.session.loginTime = new Date();
-                const redirectUrl = req.query.redirect || '/';
-                return res.json({ success: true, message: 'Login successful', redirect: redirectUrl });
+                // Regenerate session to prevent session fixation attacks
+                req.session.regenerate((err) => {
+                    if (err) {
+                        console.error('Session regeneration error:', err);
+                        return res.status(500).json({ success: false, error: 'Session error' });
+                    }
+                    req.session.authenticated = true;
+                    req.session.username = username;
+                    req.session.loginTime = new Date();
+                    req.session.save((err) => {
+                        if (err) {
+                            console.error('Session save error:', err);
+                            return res.status(500).json({ success: false, error: 'Session save error' });
+                        }
+                        const redirectUrl = req.query.redirect || req.body.redirect || '/';
+                        return res.json({ success: true, message: 'Login successful', redirect: redirectUrl });
+                    });
+                });
+            } else {
+                return res.status(401).json({ success: false, error: 'Invalid username or password' });
             }
-            return res.status(401).json({ success: false, error: 'Invalid username or password' });
         });
         this.app.post('/api/auth/logout', (req, res) => {
             req.session.destroy((err) => {
