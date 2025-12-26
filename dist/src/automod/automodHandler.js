@@ -22,12 +22,17 @@ async function handleAutoMod(message) {
         }
         // Word Filter
         if (autoModSettings.wordFilter?.enabled) {
-            const filteredWords = autoModSettings.wordFilter.words || [];
-            const messageContent = message.content.toLowerCase();
-            const foundWord = filteredWords.find((word) => messageContent.includes(word.toLowerCase()));
-            if (foundWord) {
-                await handlePunishment(message, autoModSettings.wordFilter.action, "Word filter violation");
-                return;
+            const filteredWords = autoModSettings.wordFilter.bannedWords || autoModSettings.wordFilter.words || [];
+            if (filteredWords.length > 0) {
+                const messageContent = autoModSettings.wordFilter.caseSensitive ? message.content : message.content.toLowerCase();
+                const foundWord = filteredWords.find((word) => {
+                    const searchWord = autoModSettings.wordFilter.caseSensitive ? word : word.toLowerCase();
+                    return messageContent.includes(searchWord);
+                });
+                if (foundWord) {
+                    await handlePunishment(message, autoModSettings.wordFilter.action || { type: "delete" }, "Word filter violation");
+                    return;
+                }
             }
         }
         // Anti-Spam
@@ -49,12 +54,22 @@ async function handleAutoMod(message) {
         // Anti-Link
         if (autoModSettings.antiLink?.enabled) {
             const linkRegex = /(https?:\/\/[^\s]+|www\.[^\s]+|discord\.gg\/[^\s]+)/gi;
-            if (linkRegex.test(message.content)) {
-                // Check if user has permission to send links
+            const matches = message.content.match(linkRegex);
+            if (matches && matches.length > 0) {
+                const whitelistedLinks = autoModSettings.antiLink.whitelistedLinks || [];
                 const allowedRoles = autoModSettings.antiLink.allowedRoles || [];
                 const hasPermission = message.member.roles.cache.some((role) => allowedRoles.includes(role.id));
-                if (!hasPermission) {
-                    await handlePunishment(message, autoModSettings.antiLink.action, "Link detected");
+                if (hasPermission) {
+                    return;
+                }
+                const hasWhitelistedLink = matches.some((link) => {
+                    return whitelistedLinks.some((whitelisted) => {
+                        const pattern = whitelisted.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.*');
+                        return new RegExp(pattern, 'i').test(link);
+                    });
+                });
+                if (!hasWhitelistedLink) {
+                    await handlePunishment(message, autoModSettings.antiLink.action || { type: "delete" }, "Link detected");
                     return;
                 }
             }
