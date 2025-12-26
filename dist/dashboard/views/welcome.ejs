@@ -1,168 +1,239 @@
 <%- contentFor('body') %>
 
 <div class="main-content" dir="<%= currentLang === 'ar' ? 'rtl' : 'ltr' %>">
-    <div class="space-y-6">
-        <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 rounded-2xl mb-6">
-            <h1 class="text-3xl font-bold mb-2 flex items-center <%= currentLang === 'ar' ? 'flex-row-reverse' : '' %>">
-                <i class="fas fa-hand-paper <%= currentLang === 'ar' ? 'ml-4' : 'mr-4' %>"></i>
-                <%= currentLang === 'ar' ? 'نظام الترحيب' : 'Welcome System' %>
-            </h1>
-            <p class="text-white/80"><%= currentLang === 'ar' ? 'قم بتكوين رسائل الترحيب للمستخدمين الجدد' : 'Configure welcome messages for new members' %></p>
-        </div>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Main Configuration Panel -->
+        <div class="lg:col-span-2 space-y-6">
+            <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 rounded-[12px] mb-6 shadow-lg">
+                <h1 class="text-3xl font-bold mb-2 flex items-center <%= currentLang === 'ar' ? 'flex-row-reverse' : '' %>">
+                    <i class="fas fa-hand-paper <%= currentLang === 'ar' ? 'ml-4' : 'mr-4' %>"></i>
+                    <%= currentLang === 'ar' ? 'نظام الترحيب' : 'Welcome System' %>
+                </h1>
+                <p class="text-white/80"><%= currentLang === 'ar' ? 'قم بتكوين رسائل الترحيب للمستخدمين الجدد' : 'Configure welcome messages for new members' %></p>
+            </div>
 
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-            <div class="flex items-center justify-between mb-6">
-                <h2 class="text-2xl font-bold text-gray-800 dark:text-white">
-                    <%= currentLang === 'ar' ? 'الإعدادات العامة' : 'General Settings' %>
+            <!-- General Settings Card -->
+            <div class="bg-[#1a2332] rounded-[12px] shadow-lg border border-white/10 p-6 transition-all duration-300 hover:border-blue-500/30">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold text-white">
+                        <%= currentLang === 'ar' ? 'الإعدادات العامة' : 'General Settings' %>
+                    </h2>
+                    <label class="switch-large">
+                        <input type="checkbox" id="welcome-enabled" 
+                               <%= settings.welcome?.enabled ? 'checked' : '' %>>
+                        <span class="slider-large"></span>
+                    </label>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="form-group">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">
+                            <%= currentLang === 'ar' ? 'قناة الترحيب' : 'Welcome Channel' %>
+                        </label>
+                        <select id="welcome-channel" 
+                                class="w-full px-3 py-2 bg-[#374151] border border-white/10 rounded-[12px] text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all">
+                            <option value=""><%= currentLang === 'ar' ? 'اختر القناة' : 'Select Channel' %></option>
+                            <% channels.forEach(channel => { %>
+                                <option value="<%= channel.id %>" 
+                                        <%= settings.welcome?.channelId === channel.id ? 'selected' : '' %>>
+                                    <%= channel.name %>
+                                </option>
+                            <% }) %>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">
+                            <%= currentLang === 'ar' ? 'لون الرسالة' : 'Message Color' %>
+                        </label>
+                        <div class="flex items-center gap-3">
+                            <input type="color" id="welcome-color" 
+                                   value="<%= settings.welcome?.embed?.color || '#3498db' %>"
+                                   class="w-16 h-12 rounded-[12px] cursor-pointer border-2 border-white/10 hover:border-blue-500/50 transition-all">
+                            <input type="text" id="welcome-color-text" 
+                                   value="<%= settings.welcome?.embed?.color || '#3498db' %>"
+                                   class="flex-1 px-3 py-2 bg-[#374151] border border-white/10 rounded-[12px] text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Welcome Message Card -->
+            <div class="bg-[#1a2332] rounded-[12px] shadow-lg border border-white/10 p-6 transition-all duration-300 hover:border-blue-500/30">
+                <h2 class="text-2xl font-bold text-white mb-6 flex items-center">
+                    <i class="fas fa-comment-alt <%= currentLang === 'ar' ? 'ml-3' : 'mr-3' %> text-blue-400"></i>
+                    <%= currentLang === 'ar' ? 'رسالة الترحيب' : 'Welcome Message' %>
                 </h2>
-                <label class="switch-large">
-                    <input type="checkbox" id="welcome-enabled" 
-                           <%= settings.welcome?.enabled ? 'checked' : '' %>>
-                    <span class="slider-large"></span>
-                </label>
+
+                <div class="space-y-4">
+                    <div class="form-group">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">
+                            <%= currentLang === 'ar' ? 'عنوان الرسالة' : 'Message Title' %>
+                        </label>
+                        <input type="text" id="welcome-title"
+                               value="<%= settings.welcome?.embed?.title || 'Welcome!' %>"
+                               placeholder="<%= currentLang === 'ar' ? 'مثال: مرحباً!' : 'Example: Welcome!' %>"
+                               class="w-full px-3 py-2 bg-[#374151] border border-white/10 rounded-[12px] text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all">
+                        <p class="text-xs text-gray-400 mt-1 flex items-center gap-1">
+                            <i class="fas fa-info-circle"></i>
+                            <%= currentLang === 'ar' ? 'المتغيرات المتاحة: {user}, {server}, {memberCount}' : 'Available variables: {user}, {server}, {memberCount}' %>
+                        </p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">
+                            <%= currentLang === 'ar' ? 'وصف الرسالة' : 'Message Description' %>
+                        </label>
+                        <textarea id="welcome-description" rows="4"
+                                  placeholder="<%= currentLang === 'ar' ? 'مثال: مرحباً {user} في {server}!' : 'Example: Welcome {user} to {server}!' %>"
+                                  class="w-full px-3 py-2 bg-[#374151] border border-white/10 rounded-[12px] text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all resize-none"><%= settings.welcome?.embed?.description || 'Welcome to {server}, {user}!' %></textarea>
+                        <p class="text-xs text-gray-400 mt-1 flex items-center gap-1">
+                            <i class="fas fa-info-circle"></i>
+                            <%= currentLang === 'ar' ? 'المتغيرات المتاحة: {user}, {server}, {memberCount}' : 'Available variables: {user}, {server}, {memberCount}' %>
+                        </p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">
+                            <%= currentLang === 'ar' ? 'رسالة إضافية (اختياري)' : 'Additional Message (Optional)' %>
+                        </label>
+                        <textarea id="welcome-message" rows="2"
+                                  placeholder="<%= currentLang === 'ar' ? 'رسالة نصية إضافية قبل الرسالة المضمنة' : 'Additional text message before embed' %>"
+                                  class="w-full px-3 py-2 bg-[#374151] border border-white/10 rounded-[12px] text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all resize-none"><%= settings.welcome?.message || '' %></textarea>
+                    </div>
+                </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="form-group">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        <%= currentLang === 'ar' ? 'قناة الترحيب' : 'Welcome Channel' %>
-                    </label>
-                    <select id="welcome-channel" 
-                            class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg">
-                        <option value=""><%= currentLang === 'ar' ? 'اختر القناة' : 'Select Channel' %></option>
-                        <% channels.forEach(channel => { %>
-                            <option value="<%= channel.id %>" 
-                                    <%= settings.welcome?.channelId === channel.id ? 'selected' : '' %>>
-                                <%= channel.name %>
-                            </option>
-                        <% }) %>
-                    </select>
+            <!-- Embed Settings Card -->
+            <div class="bg-[#1a2332] rounded-[12px] shadow-lg border border-white/10 p-6 transition-all duration-300 hover:border-blue-500/30">
+                <h2 class="text-2xl font-bold text-white mb-6 flex items-center">
+                    <i class="fas fa-image <%= currentLang === 'ar' ? 'ml-3' : 'mr-3' %> text-blue-400"></i>
+                    <%= currentLang === 'ar' ? 'إعدادات الرسالة المضمنة' : 'Embed Settings' %>
+                </h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="form-group">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">
+                            <%= currentLang === 'ar' ? 'صورة مصغرة' : 'Thumbnail URL' %>
+                        </label>
+                        <input type="text" id="welcome-thumbnail"
+                               value="<%= settings.welcome?.embed?.thumbnail || '' %>"
+                               placeholder="<%= currentLang === 'ar' ? 'رابط الصورة المصغرة' : 'Thumbnail image URL' %>"
+                               class="w-full px-3 py-2 bg-[#374151] border border-white/10 rounded-[12px] text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">
+                            <%= currentLang === 'ar' ? 'صورة كبيرة' : 'Large Image URL' %>
+                        </label>
+                        <input type="text" id="welcome-image"
+                               value="<%= settings.welcome?.embed?.image || '' %>"
+                               placeholder="<%= currentLang === 'ar' ? 'رابط الصورة الكبيرة' : 'Large image URL' %>"
+                               class="w-full px-3 py-2 bg-[#374151] border border-white/10 rounded-[12px] text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">
+                            <%= currentLang === 'ar' ? 'نص التذييل' : 'Footer Text' %>
+                        </label>
+                        <input type="text" id="welcome-footer"
+                               value="<%= settings.welcome?.embed?.footer?.text || '' %>"
+                               placeholder="<%= currentLang === 'ar' ? 'نص التذييل' : 'Footer text' %>"
+                               class="w-full px-3 py-2 bg-[#374151] border border-white/10 rounded-[12px] text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">
+                            <%= currentLang === 'ar' ? 'أيقونة التذييل' : 'Footer Icon URL' %>
+                        </label>
+                        <input type="text" id="welcome-footerIcon"
+                               value="<%= settings.welcome?.embed?.footer?.iconURL || '' %>"
+                               placeholder="<%= currentLang === 'ar' ? 'رابط أيقونة التذييل' : 'Footer icon URL' %>"
+                               class="w-full px-3 py-2 bg-[#374151] border border-white/10 rounded-[12px] text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all">
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        <%= currentLang === 'ar' ? 'لون الرسالة' : 'Message Color' %>
+                <div class="mt-6">
+                    <label class="flex items-center space-x-3 cursor-pointer group">
+                        <input type="checkbox" id="welcome-timestamp"
+                               <%= settings.welcome?.embed?.timestamp !== false ? 'checked' : '' %>
+                               class="w-5 h-5 rounded border-white/20 bg-[#374151] text-blue-500 focus:ring-2 focus:ring-blue-500/20 cursor-pointer">
+                        <span class="text-sm text-gray-300 group-hover:text-white transition-colors">
+                            <%= currentLang === 'ar' ? 'إظهار الطابع الزمني' : 'Show Timestamp' %>
+                        </span>
                     </label>
-                    <input type="color" id="welcome-color" 
-                           value="<%= settings.welcome?.embed?.color || '#3498db' %>"
-                           class="w-full h-10 rounded-lg cursor-pointer">
+                </div>
+            </div>
+
+            <!-- Welcome Card Background Uploader -->
+            <div class="bg-[#1a2332] rounded-[12px] shadow-lg border border-white/10 p-6 transition-all duration-300 hover:border-blue-500/30">
+                <h2 class="text-2xl font-bold text-white mb-6 flex items-center">
+                    <i class="fas fa-upload <%= currentLang === 'ar' ? 'ml-3' : 'mr-3' %> text-blue-400"></i>
+                    <%= currentLang === 'ar' ? 'خلفية بطاقة الترحيب' : 'Welcome Card Background' %>
+                </h2>
+                
+                <div class="space-y-4">
+                    <div class="border-2 border-dashed border-white/20 rounded-[12px] p-8 text-center hover:border-blue-500/50 transition-all cursor-pointer" id="welcome-card-upload-area">
+                        <input type="file" id="welcome-card-background" accept="image/*" class="hidden">
+                        <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-4"></i>
+                        <p class="text-gray-300 mb-2">
+                            <%= currentLang === 'ar' ? 'انقر أو اسحب الصورة هنا' : 'Click or drag image here' %>
+                        </p>
+                        <p class="text-xs text-gray-400">
+                            <%= currentLang === 'ar' ? 'PNG, JPG, GIF حتى 5MB' : 'PNG, JPG, GIF up to 5MB' %>
+                        </p>
+                    </div>
+                    
+                    <div id="welcome-card-preview" class="hidden">
+                        <img id="welcome-card-preview-img" src="" alt="Preview" class="w-full rounded-[12px] max-h-64 object-cover">
+                        <button id="welcome-card-remove" class="mt-2 px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-[12px] transition-all">
+                            <i class="fas fa-trash <%= currentLang === 'ar' ? 'ml-2' : 'mr-2' %>"></i>
+                            <%= currentLang === 'ar' ? 'إزالة الصورة' : 'Remove Image' %>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-            <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-6">
-                <%= currentLang === 'ar' ? 'رسالة الترحيب' : 'Welcome Message' %>
-            </h2>
-
-            <div class="space-y-4">
-                <div class="form-group">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        <%= currentLang === 'ar' ? 'عنوان الرسالة' : 'Message Title' %>
-                    </label>
-                    <input type="text" id="welcome-title"
-                           value="<%= settings.welcome?.embed?.title || 'Welcome!' %>"
-                           placeholder="<%= currentLang === 'ar' ? 'مثال: مرحباً!' : 'Example: Welcome!' %>"
-                           class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg">
-                    <p class="text-xs text-gray-500 mt-1">
-                        <%= currentLang === 'ar' ? 'المتغيرات المتاحة: {user}, {server}, {memberCount}' : 'Available variables: {user}, {server}, {memberCount}' %>
-                    </p>
+        <!-- Live Preview Panel -->
+        <div class="lg:col-span-1">
+            <div class="sticky top-6">
+                <div class="bg-[#1a2332] rounded-[12px] shadow-lg border border-white/10 p-6">
+                    <h2 class="text-xl font-bold text-white mb-4 flex items-center">
+                        <i class="fas fa-eye <%= currentLang === 'ar' ? 'ml-2' : 'mr-2' %> text-blue-400"></i>
+                        <%= currentLang === 'ar' ? 'معاينة مباشرة' : 'Live Preview' %>
+                    </h2>
+                    
+                    <div class="bg-[#2d3748] rounded-[12px] p-4 border border-white/5">
+                        <div class="bg-[#1a2332] rounded-[8px] p-4" id="welcome-preview-container">
+                            <!-- Preview will be rendered here -->
+                            <div class="text-gray-400 text-sm text-center py-8">
+                                <%= currentLang === 'ar' ? 'ابدأ الكتابة لرؤية المعاينة' : 'Start typing to see preview' %>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-
-                <div class="form-group">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        <%= currentLang === 'ar' ? 'وصف الرسالة' : 'Message Description' %>
-                    </label>
-                    <textarea id="welcome-description" rows="4"
-                              placeholder="<%= currentLang === 'ar' ? 'مثال: مرحباً {user} في {server}!' : 'Example: Welcome {user} to {server}!' %>"
-                              class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg"><%= settings.welcome?.embed?.description || 'Welcome to {server}, {user}!' %></textarea>
-                    <p class="text-xs text-gray-500 mt-1">
-                        <%= currentLang === 'ar' ? 'المتغيرات المتاحة: {user}, {server}, {memberCount}' : 'Available variables: {user}, {server}, {memberCount}' %>
-                    </p>
-                </div>
-
-                <div class="form-group">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        <%= currentLang === 'ar' ? 'رسالة إضافية (اختياري)' : 'Additional Message (Optional)' %>
-                    </label>
-                    <textarea id="welcome-message" rows="2"
-                              placeholder="<%= currentLang === 'ar' ? 'رسالة نصية إضافية قبل الرسالة المضمنة' : 'Additional text message before embed' %>"
-                              class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg"><%= settings.welcome?.message || '' %></textarea>
-                </div>
-            </div>
-        </div>
-
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-            <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-6">
-                <%= currentLang === 'ar' ? 'إعدادات الرسالة المضمنة' : 'Embed Settings' %>
-            </h2>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="form-group">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        <%= currentLang === 'ar' ? 'صورة مصغرة' : 'Thumbnail URL' %>
-                    </label>
-                    <input type="text" id="welcome-thumbnail"
-                           value="<%= settings.welcome?.embed?.thumbnail || '' %>"
-                           placeholder="<%= currentLang === 'ar' ? 'رابط الصورة المصغرة' : 'Thumbnail image URL' %>"
-                           class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg">
-                </div>
-
-                <div class="form-group">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        <%= currentLang === 'ar' ? 'صورة كبيرة' : 'Large Image URL' %>
-                    </label>
-                    <input type="text" id="welcome-image"
-                           value="<%= settings.welcome?.embed?.image || '' %>"
-                           placeholder="<%= currentLang === 'ar' ? 'رابط الصورة الكبيرة' : 'Large image URL' %>"
-                           class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg">
-                </div>
-
-                <div class="form-group">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        <%= currentLang === 'ar' ? 'نص التذييل' : 'Footer Text' %>
-                    </label>
-                    <input type="text" id="welcome-footer"
-                           value="<%= settings.welcome?.embed?.footer?.text || '' %>"
-                           placeholder="<%= currentLang === 'ar' ? 'نص التذييل' : 'Footer text' %>"
-                           class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg">
-                </div>
-
-                <div class="form-group">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        <%= currentLang === 'ar' ? 'أيقونة التذييل' : 'Footer Icon URL' %>
-                    </label>
-                    <input type="text" id="welcome-footerIcon"
-                           value="<%= settings.welcome?.embed?.footer?.iconURL || '' %>"
-                           placeholder="<%= currentLang === 'ar' ? 'رابط أيقونة التذييل' : 'Footer icon URL' %>"
-                           class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg">
-                </div>
-            </div>
-
-            <div class="mt-4">
-                <label class="flex items-center space-x-2">
-                    <input type="checkbox" id="welcome-timestamp"
-                           <%= settings.welcome?.embed?.timestamp !== false ? 'checked' : '' %>>
-                    <span class="text-sm text-gray-700 dark:text-gray-300">
-                        <%= currentLang === 'ar' ? 'إظهار الطابع الزمني' : 'Show Timestamp' %>
-                    </span>
-                </label>
             </div>
         </div>
     </div>
 </div>
 
-<div id="save-bar" class="fixed bottom-0 left-0 right-0 bg-yellow-500 text-white p-4 shadow-lg z-50 hidden">
-    <div class="container mx-auto flex items-center justify-between">
-        <span class="font-semibold">
-            <%= currentLang === 'ar' ? 'يوجد تغييرات غير محفوظة' : 'You have unsaved changes' %>
-        </span>
-        <div class="space-x-4">
-            <button id="save-welcome" class="px-4 py-2 bg-green-600 rounded-lg hover:bg-green-700 transition-all">
-                <%= currentLang === 'ar' ? 'حفظ' : 'Save' %>
-            </button>
-            <button id="cancel-welcome" class="px-4 py-2 bg-gray-600 rounded-lg hover:bg-gray-700 transition-all">
+<div id="save-bar" class="save-bar hidden">
+    <div class="save-bar-content">
+        <div class="save-bar-text">
+            <i class="fas fa-exclamation-triangle text-yellow-400"></i>
+            <span class="font-semibold">
+                <%= currentLang === 'ar' ? 'يوجد تغييرات غير محفوظة' : 'You have unsaved changes' %>
+            </span>
+        </div>
+        <div class="save-bar-buttons">
+            <button id="cancel-welcome" class="reset-button">
+                <i class="fas fa-times <%= currentLang === 'ar' ? 'ml-2' : 'mr-2' %>"></i>
                 <%= currentLang === 'ar' ? 'إلغاء' : 'Cancel' %>
+            </button>
+            <button id="save-welcome" class="save-button">
+                <i class="fas fa-save <%= currentLang === 'ar' ? 'ml-2' : 'mr-2' %>"></i>
+                <%= currentLang === 'ar' ? 'حفظ' : 'Save' %>
             </button>
         </div>
     </div>
