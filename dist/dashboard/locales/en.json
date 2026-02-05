@@ -923,13 +923,53 @@
                 "description": "For support and live updates"
             },
             "github": {
-                "title": "Follow on GitHub", 
+                "title": "Follow on GitHub",
                 "description": "To track project development"
             },
             "youtube": {
                 "title": "Watch on YouTube",
                 "description": "For tutorials and announcements"
             }
+        }
+    },
+    "music": {
+        "title": "Music Control",
+        "nowPlaying": "Now Playing",
+        "noSongPlaying": "No song is currently playing",
+        "playNow": "Play now",
+        "searchPlaceholder": "Search for a song or paste a YouTube URL...",
+        "play": "Play",
+        "pause": "Pause",
+        "resume": "Resume",
+        "stop": "Stop",
+        "skip": "Skip",
+        "next": "Next",
+        "loop": "Loop",
+        "loopEnabled": "Loop Enabled",
+        "loopDisabled": "Loop Disabled",
+        "volume": "Volume",
+        "queue": "Queue",
+        "clearQueue": "Clear Queue",
+        "removeFromQueue": "Remove",
+        "voiceChannel": "Voice Channel",
+        "selectChannel": "Select a voice channel",
+        "duration": "Duration",
+        "requestedBy": "Requested by",
+        "songsInQueue": "Songs in Queue",
+        "botStatus": "Bot Status",
+        "connected": "Connected",
+        "disconnected": "Disconnected",
+        "tips": {
+            "title": "Tips",
+            "search": "Search for songs by name or paste a YouTube URL",
+            "queue": "Add multiple songs to create a playlist",
+            "volume": "Adjust volume using the slider"
+        },
+        "errors": {
+            "noChannel": "Please select a voice channel first",
+            "noQuery": "Please enter a search query",
+            "playFailed": "Failed to play song",
+            "notInitialized": "Music system is not initialized"
         }
     }
 }
