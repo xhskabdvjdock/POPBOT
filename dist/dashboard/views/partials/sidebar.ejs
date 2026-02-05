@@ -1,8 +1,11 @@
-<div class="sidebar animate-mobile fixed inset-y-0 left-0 w-64 bg-white dark:bg-gray-800 shadow-xl border-r border-gray-200 dark:border-gray-700 z-60">
+<div
+    class="sidebar animate-mobile fixed inset-y-0 left-0 w-64 bg-white dark:bg-gray-800 shadow-xl border-r border-gray-200 dark:border-gray-700 z-60">
     <div class="flex flex-col h-full">
-        <div class="sidebar-header p-6 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-white to-gray-50 dark:from-gray-800 dark:to-gray-900">
+        <div
+            class="sidebar-header p-6 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-white to-gray-50 dark:from-gray-800 dark:to-gray-900">
             <div class="flex items-center space-x-3 group">
-                <img src="/images/logo.png" alt="nun sever" class="logo w-10 h-10 rounded-xl shadow-lg transform group-hover:scale-110 transition-all duration-300">
+                <img src="/images/logo.png" alt="nun sever"
+                    class="logo w-10 h-10 rounded-xl shadow-lg transform group-hover:scale-110 transition-all duration-300">
                 <div>
                     <h1 class="text-xl font-bold text-gray-800 dark:text-white">
                         nun sever
@@ -16,118 +19,158 @@
 
         <nav class="sidebar-content flex-1 px-4 py-4 overflow-y-auto custom-scrollbar">
             <div class="nav-section mb-6 transform hover:scale-[1.01] transition-transform">
-                <h2 class="nav-section-title px-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3 flex items-center">
+                <h2
+                    class="nav-section-title px-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3 flex items-center">
                     <i class="fas fa-home mr-2"></i>
-                    <%= currentLang === 'ar' ? 'الرئيسية' : 'MAIN' %>
+                    <%= currentLang==='ar' ? 'الرئيسية' : 'MAIN' %>
                 </h2>
                 <div class="nav-links space-y-1">
-                    <a href="/" class="nav-link flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-xl transition-all duration-300 group <%= path === '/' ? 'active bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-900/10 border-r-4 border-blue-500' : '' %>">
-                        <i class="fas fa-home w-6 text-gray-400 group-hover:text-blue-500 transform group-hover:scale-110 transition-transform"></i>
-                        <span class="ml-2"><%= currentLang === 'ar' ? 'لوحة التحكم' : 'Dashboard' %></span>
-                    </a>
-                    
-                    <a href="/settings" class="nav-link flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-xl transition-all duration-300 group <%= path === '/settings' ? 'active bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-900/10 border-r-4 border-blue-500' : '' %>">
-                        <i class="fas fa-cog w-6 text-gray-400 group-hover:text-blue-500 transform group-hover:scale-110 transition-transform"></i>
-                        <span class="ml-2"><%= locale.dashboard.settings?.title || 'Settings' %></span>
+                    <a href="/"
+                        class="nav-link flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-xl transition-all duration-300 group <%= path === '/' ? 'active bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-900/10 border-r-4 border-blue-500' : '' %>">
+                        <i
+                            class="fas fa-home w-6 text-gray-400 group-hover:text-blue-500 transform group-hover:scale-110 transition-transform"></i>
+                        <span class="ml-2">
+                            <%= currentLang==='ar' ? 'لوحة التحكم' : 'Dashboard' %>
+                        </span>
                     </a>
 
-                    <a href="/docs" class="nav-link flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-xl transition-all duration-300 group <%= path === '/docs' ? 'active bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-900/10 border-r-4 border-blue-500' : '' %>">
-                        <i class="fas fa-book text-xl group-hover:text-blue-500 <%= path === '/docs' ? 'text-blue-500' : 'text-gray-400' %>"></i>
-                        <span class="ml-3"><%= locale.dashboard.navigation.docs %></span>
+                    <a href="/settings"
+                        class="nav-link flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-xl transition-all duration-300 group <%= path === '/settings' ? 'active bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-900/10 border-r-4 border-blue-500' : '' %>">
+                        <i
+                            class="fas fa-cog w-6 text-gray-400 group-hover:text-blue-500 transform group-hover:scale-110 transition-transform"></i>
+                        <span class="ml-2">
+                            <%= locale.dashboard.settings?.title || 'Settings' %>
+                        </span>
+                    </a>
+
+                    <a href="/docs"
+                        class="nav-link flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-xl transition-all duration-300 group <%= path === '/docs' ? 'active bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-900/10 border-r-4 border-blue-500' : '' %>">
+                        <i
+                            class="fas fa-book text-xl group-hover:text-blue-500 <%= path === '/docs' ? 'text-blue-500' : 'text-gray-400' %>"></i>
+                        <span class="ml-3">
+                            <%= locale.dashboard.navigation.docs %>
+                        </span>
                     </a>
                 </div>
             </div>
 
             <div class="nav-section mb-6 transform hover:scale-[1.01] transition-transform">
-                <h2 class="nav-section-title px-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3 flex items-center">
+                <h2
+                    class="nav-section-title px-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3 flex items-center">
                     <i class="fas fa-terminal mr-2"></i>
-                    <%= currentLang === 'ar' ? 'الأوامر' : 'COMMANDS' %>
+                    <%= currentLang==='ar' ? 'الأوامر' : 'COMMANDS' %>
                 </h2>
                 <div class="nav-links space-y-1">
-                    <a href="/commands/general" class="nav-link flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-xl transition-all duration-300 group <%= path.startsWith('/commands/general') ? 'active bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-900/10 border-r-4 border-blue-500' : '' %>">
-                        <i class="fas fa-terminal w-6 text-gray-400 group-hover:text-blue-500 transform group-hover:scale-110 transition-transform"></i>
-                        <span class="ml-2"><%= currentLang === 'ar' ? 'الأوامر العامة' : 'General Commands' %></span>
+                    <a href="/commands/general"
+                        class="nav-link flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-xl transition-all duration-300 group <%= path.startsWith('/commands/general') ? 'active bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-900/10 border-r-4 border-blue-500' : '' %>">
+                        <i
+                            class="fas fa-terminal w-6 text-gray-400 group-hover:text-blue-500 transform group-hover:scale-110 transition-transform"></i>
+                        <span class="ml-2">
+                            <%= currentLang==='ar' ? 'الأوامر العامة' : 'General Commands' %>
+                        </span>
                     </a>
-                    <a href="/commands/moderation" class="nav-link flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-xl transition-all duration-300 group <%= path.startsWith('/commands/moderation') ? 'active bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-900/10 border-r-4 border-blue-500' : '' %>">
-                        <i class="fas fa-shield-alt w-6 text-gray-400 group-hover:text-blue-500 transform group-hover:scale-110 transition-transform"></i>
-                        <span class="ml-2"><%= currentLang === 'ar' ? 'أوامر الإشراف' : 'Moderation Commands' %></span>
+                    <a href="/commands/moderation"
+                        class="nav-link flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-xl transition-all duration-300 group <%= path.startsWith('/commands/moderation') ? 'active bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-900/10 border-r-4 border-blue-500' : '' %>">
+                        <i
+                            class="fas fa-shield-alt w-6 text-gray-400 group-hover:text-blue-500 transform group-hover:scale-110 transition-transform"></i>
+                        <span class="ml-2">
+                            <%= currentLang==='ar' ? 'أوامر الإشراف' : 'Moderation Commands' %>
+                        </span>
                     </a>
                 </div>
             </div>
 
             <div class="mb-6 transform hover:scale-[1.01] transition-transform">
-                <h2 class="px-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3 flex items-center">
+                <h2
+                    class="px-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3 flex items-center">
                     <i class="fas fa-cog mr-2"></i>
-                    <%= currentLang === 'ar' ? 'الإعدادات' : 'CONFIGURATION' %>
+                    <%= currentLang==='ar' ? 'الإعدادات' : 'CONFIGURATION' %>
                 </h2>
                 <div class="space-y-1">
-                    <% const configLinks = [
-                        { path: '/logs', icon: 'fa-history', name: 'logs' },
-                        { path: '/tickets', icon: 'fa-ticket-alt', name: 'tickets' },
-                        { path: '/rules', icon: 'fa-gavel', name: 'rules' },
-                        { path: '/suggestions', icon: 'fa-lightbulb', name: 'suggestions' },
-                        { path: '/apply', icon: 'fa-user-plus', name: 'apply' },
-                        { path: '/giveaway', icon: 'fa-gift', name: 'giveaway' },
-                        { path: '/tempChannels', icon: 'fa-microphone', name: 'tempChannels' },
-                        { path: '/autoreply', icon: 'fa-reply', name: 'autoReply' }
-                    ] %>
-                    
-                    <% configLinks.forEach(link => { %>
-                        <a href="<%= link.path %>" 
-                           class="nav-link flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-xl transition-all duration-300 group <%= path === link.path ? 'active bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-900/10 border-r-4 border-blue-500' : '' %>">
-                            <i class="fas <%= link.icon %> w-6 text-gray-400 group-hover:text-blue-500 transform group-hover:scale-110 transition-transform"></i>
-                            <span class="ml-2"><%= locale.dashboard.navigation[link.name] %></span>
-                        </a>
-                    <% }) %>
+                    <% const configLinks=[ { path: '/logs' , icon: 'fa-history' , name: 'logs' }, { path: '/tickets' ,
+                        icon: 'fa-ticket-alt' , name: 'tickets' }, { path: '/rules' , icon: 'fa-gavel' , name: 'rules'
+                        }, { path: '/suggestions' , icon: 'fa-lightbulb' , name: 'suggestions' }, { path: '/apply' ,
+                        icon: 'fa-user-plus' , name: 'apply' }, { path: '/giveaway' , icon: 'fa-gift' , name: 'giveaway'
+                        }, { path: '/tempChannels' , icon: 'fa-microphone' , name: 'tempChannels' }, {
+                        path: '/autoreply' , icon: 'fa-reply' , name: 'autoReply' } ] %>
+
+                        <% configLinks.forEach(link=> { %>
+                            <a href="<%= link.path %>"
+                                class="nav-link flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-xl transition-all duration-300 group <%= path === link.path ? 'active bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-900/10 border-r-4 border-blue-500' : '' %>">
+                                <i
+                                    class="fas <%= link.icon %> w-6 text-gray-400 group-hover:text-blue-500 transform group-hover:scale-110 transition-transform"></i>
+                                <span class="ml-2">
+                                    <%= locale.dashboard.navigation[link.name] %>
+                                </span>
+                            </a>
+                            <% }) %>
                 </div>
             </div>
 
             <div class="mb-6 transform hover:scale-[1.01] transition-transform">
-                <h2 class="px-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3 flex items-center">
+                <h2
+                    class="px-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3 flex items-center">
                     <i class="fas fa-shield-alt mr-2"></i>
-                    <%= currentLang === 'ar' ? 'إعدادات الحماية' : 'PROTECTION SETTINGS' %>
+                    <%= currentLang==='ar' ? 'إعدادات الحماية' : 'PROTECTION SETTINGS' %>
                 </h2>
                 <div class="space-y-1">
-                    <a href="/protection" class="nav-link flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-xl transition-all duration-300 group <%= path === '/protection' ? 'active bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-900/10 border-r-4 border-blue-500' : '' %>">
-                        <i class="fas fa-shield-alt w-6 text-gray-400 group-hover:text-blue-500 transform group-hover:scale-110 transition-transform"></i>
-                        <span class="ml-2"><%= currentLang === 'ar' ? 'إعدادات الحماية' : 'Protection Settings' %></span>
+                    <a href="/protection"
+                        class="nav-link flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-xl transition-all duration-300 group <%= path === '/protection' ? 'active bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-900/10 border-r-4 border-blue-500' : '' %>">
+                        <i
+                            class="fas fa-shield-alt w-6 text-gray-400 group-hover:text-blue-500 transform group-hover:scale-110 transition-transform"></i>
+                        <span class="ml-2">
+                            <%= currentLang==='ar' ? 'إعدادات الحماية' : 'Protection Settings' %>
+                        </span>
                     </a>
                 </div>
             </div>
 
             <div class="mb-6 transform hover:scale-[1.01] transition-transform">
-                <h2 class="px-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3 flex items-center">
+                <h2
+                    class="px-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3 flex items-center">
                     <i class="fas fa-star mr-2"></i>
-                    <%= currentLang === 'ar' ? 'الميزات المتقدمة' : 'ADVANCED FEATURES' %>
+                    <%= currentLang==='ar' ? 'الميزات المتقدمة' : 'ADVANCED FEATURES' %>
                 </h2>
                 <div class="space-y-1">
-                    <% const advancedFeatures = [
-                        { path: '/welcome', icon: 'fa-hand-wave', faClass: 'fa-hand-paper', name: 'welcomeSystem', enName: 'Welcome System', arName: 'نظام الترحيب', comingSoon: false },
-                        { path: '/selectroles', icon: 'fa-id-badge', faClass: 'fa-id-badge', name: 'selectRoles', enName: 'Select Roles Manager', arName: 'مدير اختيار الرتب', comingSoon: false },
-                        { path: '/games', icon: 'fa-gamepad', faClass: 'fa-gamepad', name: 'games', enName: 'Games', arName: 'ألعاب ديسكورد', comingSoon: true },
-                        { path: '/automod', icon: 'fa-robot', faClass: 'fa-robot', name: 'autoMod', enName: 'AutoMod', arName: 'نظام الإشراف التلقائي', comingSoon: false },
-                        { path: '/autolines', icon: 'fa-align-left', faClass: 'fa-align-left', name: 'autoLines', enName: 'Auto Lines', arName: 'الرسائل التلقائية', comingSoon: false },
-                        { path: '/leveling', icon: 'fa-chart-line', faClass: 'fa-chart-line', name: 'leveling', enName: 'Leveling System', arName: 'نظام المستويات', comingSoon: false }
-                    ] %>
-                    
-                    <% advancedFeatures.forEach(link => { %>
-                        <a href="<%= link.path %>" class="nav-link flex items-center justify-between px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-xl transition-all duration-300 group <%= path === link.path ? 'active bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-900/10 border-r-4 border-blue-500' : '' %>">
-                            <div class="flex items-center">
-                                <i class="fas <%= link.faClass %> w-6 text-gray-400 group-hover:text-blue-500 transform group-hover:scale-110 transition-transform"></i>
-                                <span class="ml-2"><%= currentLang === 'ar' ? link.arName : link.enName %></span>
-                            </div>
-                            <% if (link.comingSoon) { %>
-                                <div class="bg-gradient-to-r from-yellow-400 to-yellow-500 text-xs text-white px-2 py-1 rounded-full animate-pulse">
-                                    <%= currentLang === 'ar' ? 'قريباً' : 'Soon' %>
+                    <% const advancedFeatures=[ { path: '/music' , icon: 'fa-music' , faClass: 'fa-music' ,
+                        name: 'music' , enName: 'Music Control' , arName: 'التحكم بالموسيقى' , comingSoon: false }, {
+                        path: '/welcome' , icon: 'fa-hand-wave' , faClass: 'fa-hand-paper' , name: 'welcomeSystem' ,
+                        enName: 'Welcome System' , arName: 'نظام الترحيب' , comingSoon: false }, { path: '/selectroles'
+                        , icon: 'fa-id-badge' , faClass: 'fa-id-badge' , name: 'selectRoles' ,
+                        enName: 'Select Roles Manager' , arName: 'مدير اختيار الرتب' , comingSoon: false }, {
+                        path: '/games' , icon: 'fa-gamepad' , faClass: 'fa-gamepad' , name: 'games' , enName: 'Games' ,
+                        arName: 'ألعاب ديسكورد' , comingSoon: true }, { path: '/automod' , icon: 'fa-robot' ,
+                        faClass: 'fa-robot' , name: 'autoMod' , enName: 'AutoMod' , arName: 'نظام الإشراف التلقائي' ,
+                        comingSoon: false }, { path: '/autolines' , icon: 'fa-align-left' , faClass: 'fa-align-left' ,
+                        name: 'autoLines' , enName: 'Auto Lines' , arName: 'الرسائل التلقائية' , comingSoon: false }, {
+                        path: '/leveling' , icon: 'fa-chart-line' , faClass: 'fa-chart-line' , name: 'leveling' ,
+                        enName: 'Leveling System' , arName: 'نظام المستويات' , comingSoon: false } ] %>
+
+
+                        <% advancedFeatures.forEach(link=> { %>
+                            <a href="<%= link.path %>"
+                                class="nav-link flex items-center justify-between px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-xl transition-all duration-300 group <%= path === link.path ? 'active bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-900/10 border-r-4 border-blue-500' : '' %>">
+                                <div class="flex items-center">
+                                    <i
+                                        class="fas <%= link.faClass %> w-6 text-gray-400 group-hover:text-blue-500 transform group-hover:scale-110 transition-transform"></i>
+                                    <span class="ml-2">
+                                        <%= currentLang==='ar' ? link.arName : link.enName %>
+                                    </span>
                                 </div>
-                            <% } %>
-                        </a>
-                    <% }) %>
+                                <% if (link.comingSoon) { %>
+                                    <div
+                                        class="bg-gradient-to-r from-yellow-400 to-yellow-500 text-xs text-white px-2 py-1 rounded-full animate-pulse">
+                                        <%= currentLang==='ar' ? 'قريباً' : 'Soon' %>
+                                    </div>
+                                    <% } %>
+                            </a>
+                            <% }) %>
                 </div>
             </div>
         </nav>
 
-        <div class="p-4 border-t border-gray-200 dark:border-gray-700 bg-gradient-to-b from-transparent to-gray-50 dark:to-gray-900">
+        <div
+            class="p-4 border-t border-gray-200 dark:border-gray-700 bg-gradient-to-b from-transparent to-gray-50 dark:to-gray-900">
             <div class="flex flex-col space-y-4">
                 <div class="flex items-center justify-between bg-white dark:bg-gray-700 p-3 rounded-xl shadow-sm">
                     <div class="flex items-center space-x-2">
@@ -136,39 +179,43 @@
                             <%= locale.dashboard.status.online %>
                         </span>
                     </div>
-                    <button id="themeToggle" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transform hover:scale-110 transition-all duration-300 focus:outline-none">
+                    <button id="themeToggle"
+                        class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transform hover:scale-110 transition-all duration-300 focus:outline-none">
                         <i class="fas fa-moon"></i>
                     </button>
                 </div>
 
                 <div class="flex items-center justify-between bg-white dark:bg-gray-700 p-3 rounded-xl shadow-sm">
-                    <select id="languageSelect" class="w-full bg-transparent text-gray-600 dark:text-gray-300 text-sm font-medium focus:outline-none cursor-pointer">
-                        <option value="en" <%= currentLang === 'en' ? 'selected' : '' %>>
+                    <select id="languageSelect"
+                        class="w-full bg-transparent text-gray-600 dark:text-gray-300 text-sm font-medium focus:outline-none cursor-pointer">
+                        <option value="en" <%=currentLang==='en' ? 'selected' : '' %>>
                             🇺🇸 English
                         </option>
-                        <option value="ar" <%= currentLang === 'ar' ? 'selected' : '' %>>
+                        <option value="ar" <%=currentLang==='ar' ? 'selected' : '' %>>
                             🇸🇦 العربية
                         </option>
                     </select>
                 </div>
 
-                <button id="logoutButton" class="w-full flex items-center justify-center px-4 py-3 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl transition-all duration-300 group">
+                <button id="logoutButton"
+                    class="w-full flex items-center justify-center px-4 py-3 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl transition-all duration-300 group">
                     <i class="fas fa-sign-out-alt mr-2 group-hover:scale-110 transition-transform"></i>
-                    <span><%= currentLang === 'ar' ? 'تسجيل الخروج' : 'Logout' %></span>
+                    <span>
+                        <%= currentLang==='ar' ? 'تسجيل الخروج' : 'Logout' %>
+                    </span>
                 </button>
 
                 <div class="grid grid-cols-4 gap-2 pt-2 border-t border-gray-200 dark:border-gray-700">
-                    <% const socialLinks = [
-                        { url: 'https://www.instagram.com/a0sls/', icon: 'fa-instagram', color: 'hover:text-pink-600' },
-                        { url: 'https://discord.gg/DAyxwtVazg', icon: 'fa-discord', color: 'hover:text-indigo-600' }
-                    ] %>
+                    <% const socialLinks=[ { url: 'https://www.instagram.com/a0sls/' , icon: 'fa-instagram' ,
+                        color: 'hover:text-pink-600' }, { url: 'https://discord.gg/DAyxwtVazg' , icon: 'fa-discord' ,
+                        color: 'hover:text-indigo-600' } ] %>
 
-                    <% socialLinks.forEach(link => { %>
-                        <a href="<%= link.url %>" target="_blank" 
-                           class="flex items-center justify-center p-2 text-gray-500 dark:text-gray-400 <%= link.color %> transform hover:scale-125 transition-all duration-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
-                            <i class="fab <%= link.icon %>"></i>
-                        </a>
-                    <% }) %>
+                        <% socialLinks.forEach(link=> { %>
+                            <a href="<%= link.url %>" target="_blank"
+                                class="flex items-center justify-center p-2 text-gray-500 dark:text-gray-400 <%= link.color %> transform hover:scale-125 transition-all duration-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
+                                <i class="fab <%= link.icon %>"></i>
+                            </a>
+                            <% }) %>
                 </div>
             </div>
         </div>
@@ -176,54 +223,62 @@
 </div>
 
 <style>
-.custom-scrollbar::-webkit-scrollbar {
-    width: 4px;
-}
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 4px;
+    }
 
-.custom-scrollbar::-webkit-scrollbar-track {
-    background: transparent;
-}
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+    }
 
-.custom-scrollbar::-webkit-scrollbar-thumb {
-    background: rgba(99, 102, 241, 0.2);
-    border-radius: 2px;
-}
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: rgba(99, 102, 241, 0.2);
+        border-radius: 2px;
+    }
 
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: rgba(99, 102, 241, 0.4);
-}
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: rgba(99, 102, 241, 0.4);
+    }
 
-@keyframes status-pulse {
-    0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
-    70% { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
-}
+    @keyframes status-pulse {
+        0% {
+            box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4);
+        }
 
-.status-indicator {
-    animation: status-pulse 2s infinite;
-}
+        70% {
+            box-shadow: 0 0 0 10px rgba(34, 197, 94, 0);
+        }
 
-.nav-link {
-    position: relative;
-    overflow: hidden;
-}
+        100% {
+            box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+        }
+    }
 
-.nav-link::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 0;
-    height: 2px;
-    background: #3B82F6;
-    transition: width 0.3s ease;
-}
+    .status-indicator {
+        animation: status-pulse 2s infinite;
+    }
 
-.nav-link:hover::after {
-    width: 100%;
-}
+    .nav-link {
+        position: relative;
+        overflow: hidden;
+    }
 
-.active.nav-link::after {
-    width: 100%;
-}
+    .nav-link::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: #3B82F6;
+        transition: width 0.3s ease;
+    }
+
+    .nav-link:hover::after {
+        width: 100%;
+    }
+
+    .active.nav-link::after {
+        width: 100%;
+    }
 </style>
