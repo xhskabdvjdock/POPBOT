@@ -51,7 +51,7 @@ class Dashboard {
             return next();
         }
         // Allow static files
-        if (req.path.startsWith('/api/auth') || 
+        if (req.path.startsWith('/api/auth') ||
             req.path.startsWith('/public') ||
             req.path.startsWith('/css/') ||
             req.path.startsWith('/js/') ||
@@ -166,7 +166,7 @@ class Dashboard {
             resave: false,
             saveUninitialized: false,
             name: 'dashboard.sid',
-            cookie: { 
+            cookie: {
                 secure: isBehindProxy, // true for HTTPS (production), false for HTTP (development)
                 httpOnly: true,
                 maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
@@ -177,7 +177,7 @@ class Dashboard {
             rolling: true, // Reset expiration on every request
             proxy: isBehindProxy // Trust proxy headers
         }));
-        
+
         // Trust proxy if behind one (like Render.com)
         if (isBehindProxy) {
             this.app.set('trust proxy', 1);
@@ -229,19 +229,19 @@ class Dashboard {
             const { username, password } = req.body;
             console.log('Login attempt:', { username, hasPassword: !!password });
             console.log('Auth config:', { expectedUsername: this.authConfig.username });
-            
+
             if (username === this.authConfig.username && password === this.authConfig.password) {
                 // Set session data directly
                 req.session.authenticated = true;
                 req.session.username = username;
                 req.session.loginTime = new Date();
-                
+
                 console.log('Session set:', {
                     authenticated: req.session.authenticated,
                     username: req.session.username,
                     sessionID: req.sessionID
                 });
-                
+
                 // Save session and send response
                 req.session.save((err) => {
                     if (err) {
@@ -271,10 +271,10 @@ class Dashboard {
                 username: req.session?.username || null
             });
         });
-        
+
         // Apply authentication middleware to all routes after auth routes
         this.app.use((req, res, next) => this.requireAuth(req, res, next));
-        
+
         // Dashboard home page - requires authentication
         this.app.get('/', async (_req, res) => {
             const currentLang = _req.cookies?.preferredLanguage || 'en';
@@ -341,6 +341,213 @@ class Dashboard {
                 });
             }
         });
+        // ==================== MUSIC ROUTES ====================
+        this.app.get('/music', async (_req, res) => {
+            const currentLang = _req.cookies?.preferredLanguage || 'en';
+            const locale = this.getLocale(currentLang);
+            try {
+                const guild = this.client.guilds.cache.get(config_1.default.mainGuildId);
+                let voiceChannels = [];
+                if (guild) {
+                    voiceChannels = guild.channels.cache
+                        .filter(channel => channel.type === 2)
+                        .map(channel => ({
+                            id: channel.id,
+                            name: channel.name,
+                            members: channel.members.size
+                        }));
+                }
+                return res.render('music', {
+                    title: locale.music?.title || 'Music Control',
+                    settings: this.client.settings,
+                    client: this.client,
+                    config: config_1.default,
+                    path: '/music',
+                    currentLang,
+                    locale,
+                    voiceChannels,
+                    breadcrumbs: this.getBreadcrumbs('/music')
+                });
+            } catch (error) {
+                console.error('Error rendering music page:', error);
+                return res.status(500).render('error', {
+                    title: 'Error',
+                    error: { code: 500, message: 'Internal Server Error' },
+                    currentLang,
+                    locale
+                });
+            }
+        });
+        // Music API - Get Status
+        this.app.get('/api/music/status', async (_req, res) => {
+            try {
+                if (!this.client.musicManager) {
+                    return res.json({ currentSong: null, queue: [], isLoop: false, isPaused: false, volume: 100, isPlaying: false });
+                }
+                const status = this.client.musicManager.getStatus(config_1.default.mainGuildId);
+                return res.json(status);
+            } catch (error) {
+                console.error('Error getting music status:', error);
+                return res.status(500).json({ error: 'Failed to get status' });
+            }
+        });
+        // Music API - Play
+        this.app.post('/api/music/play', async (req, res) => {
+            try {
+                const { query, channelId } = req.body;
+                if (!query || !channelId) {
+                    return res.status(400).json({ error: 'Query and channelId are required' });
+                }
+                if (!this.client.musicManager) {
+                    return res.status(500).json({ error: 'Music manager not initialized' });
+                }
+                const result = await this.client.musicManager.play(config_1.default.mainGuildId, channelId, query, 'Dashboard');
+                return res.json(result);
+            } catch (error) {
+                console.error('Error playing music:', error);
+                return res.status(500).json({ error: error.message || 'Failed to play' });
+            }
+        });
+        // Music API - Skip
+        this.app.post('/api/music/skip', async (_req, res) => {
+            try {
+                if (!this.client.musicManager) {
+                    return res.status(500).json({ error: 'Music manager not initialized' });
+                }
+                const skipped = this.client.musicManager.skip(config_1.default.mainGuildId);
+                return res.json({ success: true, skipped });
+            } catch (error) {
+                console.error('Error skipping:', error);
+                return res.status(500).json({ error: error.message || 'Failed to skip' });
+            }
+        });
+        // Music API - Stop
+        this.app.post('/api/music/stop', async (_req, res) => {
+            try {
+                if (!this.client.musicManager) {
+                    return res.status(500).json({ error: 'Music manager not initialized' });
+                }
+                this.client.musicManager.stop(config_1.default.mainGuildId);
+                return res.json({ success: true });
+            } catch (error) {
+                console.error('Error stopping:', error);
+                return res.status(500).json({ error: error.message || 'Failed to stop' });
+            }
+        });
+        // Music API - Pause
+        this.app.post('/api/music/pause', async (_req, res) => {
+            try {
+                if (!this.client.musicManager) {
+                    return res.status(500).json({ error: 'Music manager not initialized' });
+                }
+                this.client.musicManager.pause(config_1.default.mainGuildId);
+                return res.json({ success: true });
+            } catch (error) {
+                console.error('Error pausing:', error);
+                return res.status(500).json({ error: error.message || 'Failed to pause' });
+            }
+        });
+        // Music API - Resume
+        this.app.post('/api/music/resume', async (_req, res) => {
+            try {
+                if (!this.client.musicManager) {
+                    return res.status(500).json({ error: 'Music manager not initialized' });
+                }
+                this.client.musicManager.resume(config_1.default.mainGuildId);
+                return res.json({ success: true });
+            } catch (error) {
+                console.error('Error resuming:', error);
+                return res.status(500).json({ error: error.message || 'Failed to resume' });
+            }
+        });
+        // Music API - Loop
+        this.app.post('/api/music/loop', async (_req, res) => {
+            try {
+                if (!this.client.musicManager) {
+                    return res.status(500).json({ error: 'Music manager not initialized' });
+                }
+                const isLoop = this.client.musicManager.toggleLoop(config_1.default.mainGuildId);
+                return res.json({ success: true, isLoop });
+            } catch (error) {
+                console.error('Error toggling loop:', error);
+                return res.status(500).json({ error: error.message || 'Failed to toggle loop' });
+            }
+        });
+        // Music API - Volume
+        this.app.post('/api/music/volume', async (req, res) => {
+            try {
+                const { volume } = req.body;
+                if (volume === undefined) {
+                    return res.status(400).json({ error: 'Volume is required' });
+                }
+                if (!this.client.musicManager) {
+                    return res.status(500).json({ error: 'Music manager not initialized' });
+                }
+                const newVolume = this.client.musicManager.setVolume(config_1.default.mainGuildId, volume);
+                return res.json({ success: true, volume: newVolume });
+            } catch (error) {
+                console.error('Error setting volume:', error);
+                return res.status(500).json({ error: error.message || 'Failed to set volume' });
+            }
+        });
+        // Music API - Get Queue
+        this.app.get('/api/music/queue', async (_req, res) => {
+            try {
+                if (!this.client.musicManager) {
+                    return res.json([]);
+                }
+                const queue = this.client.musicManager.getQueue(config_1.default.mainGuildId);
+                return res.json(queue);
+            } catch (error) {
+                console.error('Error getting queue:', error);
+                return res.status(500).json({ error: 'Failed to get queue' });
+            }
+        });
+        // Music API - Remove from Queue
+        this.app.post('/api/music/queue/remove', async (req, res) => {
+            try {
+                const { index } = req.body;
+                if (index === undefined) {
+                    return res.status(400).json({ error: 'Index is required' });
+                }
+                if (!this.client.musicManager) {
+                    return res.status(500).json({ error: 'Music manager not initialized' });
+                }
+                const removed = this.client.musicManager.removeFromQueue(config_1.default.mainGuildId, index);
+                return res.json({ success: true, removed });
+            } catch (error) {
+                console.error('Error removing from queue:', error);
+                return res.status(500).json({ error: error.message || 'Failed to remove from queue' });
+            }
+        });
+        // Music API - Clear Queue
+        this.app.post('/api/music/queue/clear', async (_req, res) => {
+            try {
+                if (!this.client.musicManager) {
+                    return res.status(500).json({ error: 'Music manager not initialized' });
+                }
+                this.client.musicManager.clearQueue(config_1.default.mainGuildId);
+                return res.json({ success: true });
+            } catch (error) {
+                console.error('Error clearing queue:', error);
+                return res.status(500).json({ error: error.message || 'Failed to clear queue' });
+            }
+        });
+        // Music API - Get Voice Channels
+        this.app.get('/api/music/voice-channels', async (_req, res) => {
+            try {
+                if (!this.client.musicManager) {
+                    return res.json([]);
+                }
+                const channels = this.client.musicManager.getVoiceChannels(config_1.default.mainGuildId);
+                return res.json(channels);
+            } catch (error) {
+                console.error('Error getting voice channels:', error);
+                return res.status(500).json({ error: 'Failed to get voice channels' });
+            }
+        });
+        // ==================== END MUSIC ROUTES ====================
+
         this.app.get('/settings', async (_req, res) => {
             const currentLang = _req.cookies?.preferredLanguage || 'en';
             const locale = this.getLocale(currentLang);
@@ -561,11 +768,11 @@ class Dashboard {
                     .filter(role => role.id !== guild.id)
                     .sort((a, b) => b.position - a.position)
                     .map(role => ({
-                    id: role.id,
-                    name: role.name,
-                    color: role.color,
-                    position: role.position
-                }));
+                        id: role.id,
+                        name: role.name,
+                        color: role.color,
+                        position: role.position
+                    }));
                 return res.json(roles);
             }
             catch (error) {
@@ -627,10 +834,10 @@ class Dashboard {
                 const channels = guild.channels.cache
                     .filter(channel => channel.type === 0)
                     .map(channel => ({
-                    id: channel.id,
-                    name: channel.name,
-                    type: channel.type
-                }));
+                        id: channel.id,
+                        name: channel.name,
+                        type: channel.type
+                    }));
                 return res.json(channels);
             }
             catch (error) {
@@ -655,9 +862,9 @@ class Dashboard {
                 const channels = guild.channels.cache
                     .filter(channel => channel.type === 0)
                     .map(channel => ({
-                    id: channel.id,
-                    name: channel.name
-                }));
+                        id: channel.id,
+                        name: channel.name
+                    }));
                 return res.render('logs', {
                     title: locale.dashboard.logs.title,
                     settings: this.client.settings,
@@ -718,17 +925,17 @@ class Dashboard {
                 const channels = guild.channels.cache
                     .filter(channel => channel.type === 0)
                     .map(channel => ({
-                    id: channel.id,
-                    name: channel.name
-                }));
+                        id: channel.id,
+                        name: channel.name
+                    }));
                 const roles = guild.roles.cache
                     .filter(role => role.id !== guild.id)
                     .sort((a, b) => b.position - a.position)
                     .map(role => ({
-                    id: role.id,
-                    name: role.name,
-                    color: role.hexColor
-                }));
+                        id: role.id,
+                        name: role.name,
+                        color: role.hexColor
+                    }));
                 res.render('protection', {
                     title: res.locals.locale.dashboard.protection.title,
                     settings: this.client.settings,
@@ -813,23 +1020,23 @@ class Dashboard {
                 const channels = guild.channels.cache
                     .filter(channel => channel.type === discord_js_1.ChannelType.GuildText)
                     .map(channel => ({
-                    id: channel.id,
-                    name: channel.name
-                }));
+                        id: channel.id,
+                        name: channel.name
+                    }));
                 const categories = guild.channels.cache
                     .filter(channel => channel.type === discord_js_1.ChannelType.GuildCategory)
                     .map(channel => ({
-                    id: channel.id,
-                    name: channel.name
-                }));
+                        id: channel.id,
+                        name: channel.name
+                    }));
                 const roles = guild.roles.cache
                     .filter(role => role.id !== guild.id)
                     .sort((a, b) => b.position - a.position)
                     .map(role => ({
-                    id: role.id,
-                    name: role.name,
-                    color: role.hexColor || '#ffffff'
-                }));
+                        id: role.id,
+                        name: role.name,
+                        color: role.hexColor || '#ffffff'
+                    }));
                 return res.render('tickets', {
                     title: locale.dashboard.tickets.title,
                     settings: this.client.settings,
@@ -977,18 +1184,18 @@ class Dashboard {
                 const channels = guild.channels.cache
                     .filter(channel => channel.type === discord_js_1.ChannelType.GuildText)
                     .map(channel => ({
-                    id: channel.id,
-                    name: channel.name
-                }));
+                        id: channel.id,
+                        name: channel.name
+                    }));
                 const roles = guild.roles.cache
                     .filter(role => role.id !== guild.id)
                     .sort((a, b) => b.position - a.position)
                     .map(role => ({
-                    id: role.id,
-                    name: role.name,
-                    color: role.hexColor,
-                    position: role.position
-                }));
+                        id: role.id,
+                        name: role.name,
+                        color: role.hexColor,
+                        position: role.position
+                    }));
                 res.render('apply', {
                     title: res.locals.locale.dashboard.apply.title,
                     settings: this.client.settings,
@@ -1149,17 +1356,17 @@ class Dashboard {
                 const channels = guild.channels.cache
                     .filter(channel => channel.type === discord_js_1.ChannelType.GuildText)
                     .map(channel => ({
-                    id: channel.id,
-                    name: channel.name
-                }));
+                        id: channel.id,
+                        name: channel.name
+                    }));
                 const roles = guild.roles.cache
                     .filter(role => role.id !== guild.id)
                     .sort((a, b) => b.position - a.position)
                     .map(role => ({
-                    id: role.id,
-                    name: role.name,
-                    color: role.hexColor
-                }));
+                        id: role.id,
+                        name: role.name,
+                        color: role.hexColor
+                    }));
                 res.render('giveaway', {
                     title: res.locals.locale.dashboard.giveaway.title,
                     settings: this.client.settings,
@@ -1214,23 +1421,23 @@ class Dashboard {
                 const channels = guild.channels.cache
                     .filter(channel => channel.type === discord_js_1.ChannelType.GuildVoice)
                     .map(channel => ({
-                    id: channel.id,
-                    name: channel.name
-                }));
+                        id: channel.id,
+                        name: channel.name
+                    }));
                 const categories = guild.channels.cache
                     .filter(channel => channel.type === discord_js_1.ChannelType.GuildCategory)
                     .map(channel => ({
-                    id: channel.id,
-                    name: channel.name
-                }));
+                        id: channel.id,
+                        name: channel.name
+                    }));
                 const roles = guild.roles.cache
                     .filter(role => role.id !== guild.id)
                     .sort((a, b) => b.position - a.position)
                     .map(role => ({
-                    id: role.id,
-                    name: role.name,
-                    color: role.hexColor || '#ffffff'
-                }));
+                        id: role.id,
+                        name: role.name,
+                        color: role.hexColor || '#ffffff'
+                    }));
                 return res.render('tempChannels', {
                     title: locale.dashboard.tempChannels.title,
                     settings: this.client.settings,
@@ -1541,9 +1748,9 @@ class Dashboard {
                 const channels = guild.channels.cache
                     .filter(channel => channel.type === discord_js_1.ChannelType.GuildText)
                     .map(channel => ({
-                    id: channel.id,
-                    name: channel.name
-                }));
+                        id: channel.id,
+                        name: channel.name
+                    }));
                 return res.render('welcome', {
                     title: currentLang === 'ar' ? 'نظام الترحيب' : 'Welcome System',
                     settings: this.client.settings,
@@ -1582,10 +1789,10 @@ class Dashboard {
                     .filter(role => role.id !== guild.id)
                     .sort((a, b) => b.position - a.position)
                     .map(role => ({
-                    id: role.id,
-                    name: role.name,
-                    color: role.hexColor || '#ffffff'
-                }));
+                        id: role.id,
+                        name: role.name,
+                        color: role.hexColor || '#ffffff'
+                    }));
                 return res.render('selectroles', {
                     title: currentLang === 'ar' ? 'مدير اختيار الرتب' : 'Select Roles Manager',
                     settings: this.client.settings,
@@ -1700,9 +1907,9 @@ class Dashboard {
                 const channels = guild.channels.cache
                     .filter(channel => channel.type === discord_js_1.ChannelType.GuildText)
                     .map(channel => ({
-                    id: channel.id,
-                    name: channel.name
-                }));
+                        id: channel.id,
+                        name: channel.name
+                    }));
                 return res.render('leveling', {
                     title: currentLang === 'ar' ? 'نظام المستويات' : 'Leveling System',
                     settings: this.client.settings,
